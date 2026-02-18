@@ -16,30 +16,30 @@
       </div>
     </header>
 
-    <!-- SCREEN: INTRO -->
+    <!-- SCREEN: INTRO (visible por defecto) -->
     <section class="card screen" id="screen-intro">
-      <h2>Su boda no es un evento.<br/>Es una experiencia emocional irrepetible.</h2>
+      <h2>Tu boda no es un evento más.<br/>Es una experiencia emocional irrepetible.</h2>
       <p>
-        En menos de <strong>5 minutos</strong> descubrirán el estilo que define su boda y el
+        En menos de <strong>3 minutos</strong> descubrirás el estilo que define su boda y el
         <strong>set musical ideal</strong> para convertirla en un momento inolvidable.
       </p>
       <div class="cta-row">
         <button class="btn primary" id="btn-start">Comenzar</button>
       </div>
-      <p class="fineprint">Al finalizar recibirán un resultado personalizado.</p>
+      <p class="fineprint">Al finalizar recibirás un resultado personalizado.</p>
     </section>
 
-    <!-- SCREEN: LEAD FORM -->
-    <section class="card screen hidden" id="screen-lead">
+    <!-- SCREEN: LEAD FORM (oculto por defecto) -->
+    <section class="card screen hidden" id="screen-lead" hidden>
       <div class="progress">
         <div class="bar" style="width: 20%"></div>
       </div>
-      <h2>Antes de comenzar, cuéntenos un poco sobre ustedes</h2>
+      <h2>Antes de comenzar, contame un poco sobre vos</h2>
 
       <form id="lead-form" class="form">
         <div class="field">
           <label for="nombre">Nombre y apellido <span class="req">*</span></label>
-          <input id="nombre" name="nombre" type="text" placeholder="Ej: Juan Pérez" required />
+          <input id="nombre" name="nombre" type="text" placeholder="Ej: Ceci Lezcano" required />
         </div>
 
         <div class="field">
@@ -102,8 +102,8 @@
       </form>
     </section>
 
-    <!-- SCREEN: QUESTIONS -->
-    <section class="card screen hidden" id="screen-quiz" aria-live="polite">
+    <!-- SCREEN: QUESTIONS (oculto por defecto) -->
+    <section class="card screen hidden" id="screen-quiz" aria-live="polite" hidden>
       <div class="progress">
         <div class="bar" id="quiz-bar" style="width: 30%"></div>
       </div>
@@ -121,8 +121,8 @@
       </div>
     </section>
 
-    <!-- SCREEN: RESULT -->
-    <section class="card screen hidden" id="screen-result">
+    <!-- SCREEN: RESULT (oculto por defecto) -->
+    <section class="card screen hidden" id="screen-result" hidden>
       <div class="progress">
         <div class="bar" style="width: 100%"></div>
       </div>
@@ -130,14 +130,12 @@
       <h2 id="result-title">Tu resultado</h2>
       <p class="muted" id="result-subtitle"></p>
 
-      <!-- Breve (impacto) -->
       <div class="result-box" id="result-brief"></div>
 
       <div class="cta-row">
         <button class="btn ghost" id="btn-toggle-details">Ver análisis completo</button>
       </div>
 
-      <!-- Completo (expandible) -->
       <div class="result-box hidden" id="result-details"></div>
 
       <div class="cta-row split stack">
