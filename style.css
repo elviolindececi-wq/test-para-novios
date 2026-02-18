@@ -1,5 +1,5 @@
 /* =========================
-   EL VIOLÍN DE CECI — PREMIUM UI
+   EL VIOLÍN DE CECI — PREMIUM UI (FINAL)
    ========================= */
 
 :root{
@@ -13,6 +13,7 @@
   /* Gold (premium) */
   --gold:#d4af37;
   --gold2:#f3d27a;
+  --gold3:#b8922c;
   --goldLine: rgba(212,175,55,.45);
   --goldGlow: rgba(212,175,55,.30);
 
@@ -107,6 +108,24 @@ h2{
   line-height: 1.15;
   letter-spacing: -0.2px;
 }
+
+/* ✅ TITULOS EN DORADO (premium) */
+h2,
+#q-title,
+#result-title{
+  background: linear-gradient(
+    135deg,
+    #f5e6b8 0%,
+    var(--gold2) 20%,
+    var(--gold) 48%,
+    var(--gold3) 70%,
+    var(--gold2) 100%
+  );
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
 p{ color: var(--txt); line-height: 1.62; margin: 0 0 10px; }
 .muted{ color: var(--muted); }
 
@@ -117,7 +136,7 @@ p{ color: var(--txt); line-height: 1.62; margin: 0 0 10px; }
 }
 
 /* =========================
-   PROGRESS
+   PROGRESS (GOLD)
    ========================= */
 .progress{
   width:100%;
@@ -128,11 +147,34 @@ p{ color: var(--txt); line-height: 1.62; margin: 0 0 10px; }
   margin-bottom: 14px;
   border: 1px solid rgba(255,255,255,.10);
 }
+
+/* ✅ barra dorada + transición */
 .bar{
   height:100%;
   width: 0%;
-  background: linear-gradient(90deg, rgba(255,255,255,.70), rgba(255,255,255,.50));
-  box-shadow: 0 0 0 1px rgba(255,255,255,.18) inset;
+  background: linear-gradient(90deg, var(--gold), var(--gold2), var(--gold3));
+  box-shadow:
+    0 0 12px rgba(212,175,55,.35),
+    inset 0 0 8px rgba(255,255,255,.22);
+  transition: width .4s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+/* ✅ shine sutil (premium) */
+.bar::after{
+  content:"";
+  position:absolute;
+  top:0;
+  left:-50%;
+  width:50%;
+  height:100%;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,.30), transparent);
+  animation: shine 2.8s infinite;
+}
+@keyframes shine{
+  0%{ left:-50%; }
+  100%{ left:120%; }
 }
 
 /* =========================
@@ -352,20 +394,15 @@ hr{
   transform: translateY(0px) scale(.995);
 }
 
-/* =========================
-   ✅ SELECTED GOLD (Premium)
-   ========================= */
+/* ✅ SELECTED GOLD (Premium) — único (sin duplicados) */
 .opt.selected{
-  background: linear-gradient(
-    135deg,
-    rgba(212,175,55,.12),
-    rgba(243,210,122,.05)
-  );
-  border-color: rgba(212,175,55,.65);
+  background: linear-gradient(135deg, rgba(212,175,55,.14), rgba(243,210,122,.06));
+  border-color: rgba(212,175,55,.75);
   box-shadow:
-    0 0 0 1px rgba(212,175,55,.18) inset,
+    0 0 0 1px rgba(212,175,55,.20) inset,
     0 10px 26px rgba(0,0,0,.32),
-    0 0 28px rgba(212,175,55,.14);
+    0 0 28px rgba(212,175,55,.16);
+  animation: goldPop .16s ease;
 }
 .opt.selected .k{
   background: linear-gradient(135deg, var(--gold), var(--gold2));
@@ -374,10 +411,6 @@ hr{
   box-shadow: 0 8px 18px rgba(212,175,55,.28);
 }
 
-/* Pequeña animación táctil */
-.opt.selected{
-  animation: goldPop .16s ease;
-}
 @keyframes goldPop{
   from{ transform: scale(.992); }
   to{ transform: scale(1); }
@@ -400,11 +433,7 @@ hr{
   padding: 22px 18px;
   border-radius: 18px;
   border: 1px solid var(--goldLine);
-  background: linear-gradient(
-    145deg,
-    rgba(212,175,55,0.07),
-    rgba(255,255,255,0.02)
-  );
+  background: linear-gradient(145deg, rgba(212,175,55,0.07), rgba(255,255,255,0.02));
   box-shadow: 0 16px 46px rgba(0,0,0,.40);
   animation: fadeInUp 0.55s ease forwards;
   opacity: 0;
@@ -456,30 +485,6 @@ hr{
   .card{ padding: 18px; }
   .cta-row.split{ gap: 8px; }
   .btn{ padding: 12px 12px; }
-}
-/* =========================
-   FORCE GOLD SELECT (override)
-   Pegá esto AL FINAL del style.css
-   ========================= */
-
-.opt.selected{
-  background: linear-gradient(
-    135deg,
-    rgba(212,175,55,.14),
-    rgba(243,210,122,.06)
-  ) !important;
-  border-color: rgba(212,175,55,.75) !important;
-  box-shadow:
-    0 0 0 1px rgba(212,175,55,.20) inset,
-    0 10px 26px rgba(0,0,0,.32),
-    0 0 28px rgba(212,175,55,.16) !important;
-}
-
-.opt.selected .k{
-  background: linear-gradient(135deg, var(--gold), var(--gold2)) !important;
-  border: none !important;
-  color: #111 !important;
-  box-shadow: 0 8px 18px rgba(212,175,55,.28) !important;
 }
 
 
