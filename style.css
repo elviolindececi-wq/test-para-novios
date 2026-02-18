@@ -1,11 +1,14 @@
 :root{
   --bg:#0e0f14;
-  --card:#151724;
   --txt:#f2f2f6;
   --muted:#b7b8c6;
   --line:rgba(255,255,255,.10);
   --shadow: 0 16px 50px rgba(0,0,0,.45);
   --radius:18px;
+
+  /* Gold (sutil) */
+  --gold:#d4af37;
+  --goldLine: rgba(212,175,55,.45);
 }
 
 *{box-sizing:border-box}
@@ -153,43 +156,6 @@ p{ color: var(--txt); line-height: 1.5; margin: 0 0 10px; }
   background: transparent;
 }
 
-.quiz-head{
-  display:flex;
-  justify-content: space-between;
-  align-items:flex-end;
-  gap: 10px;
-}
-.options{
-  margin-top: 14px;
-  display:grid;
-  gap: 10px;
-}
-.opt{
-  border: 1px solid var(--line);
-  background: rgba(0,0,0,.22);
-  border-radius: 14px;
-  padding: 12px 12px;
-  cursor: pointer;
-  transition: transform .05s ease;
-}
-.opt:hover{ background: rgba(255,255,255,.06); }
-.opt:active{ transform: scale(.995); }
-.opt .k{
-  display:inline-block;
-  min-width: 26px;
-  text-align:center;
-  padding: 3px 8px;
-  border-radius: 999px;
-  border: 1px solid var(--line);
-  background: rgba(255,255,255,.06);
-  margin-right: 10px;
-  font-weight: 700;
-}
-.opt.selected{
-  border-color: rgba(255,255,255,.34);
-  background: rgba(255,255,255,.08);
-}
-
 .result-box{
   margin-top: 14px;
   border: 1px solid var(--line);
@@ -201,8 +167,14 @@ p{ color: var(--txt); line-height: 1.5; margin: 0 0 10px; }
   margin: 0 0 8px;
   font-size: 18px;
 }
+.result-box h4{
+  margin: 12px 0 6px;
+  font-size: 15px;
+  color: rgba(255,255,255,.92);
+}
 .result-box ul{ margin: 8px 0 0 18px; }
 .result-box li{ margin: 6px 0; color: var(--txt); }
+
 hr{
   border:0;
   border-top:1px solid var(--line);
@@ -215,3 +187,146 @@ hr{
   font-size: 12px;
   text-align:center;
 }
+
+/* =========================
+   QUIZ: FULL-SCREEN EDITORIAL
+   ========================= */
+#screen-quiz.card{
+  padding: 28px 22px;
+  min-height: calc(100vh - 140px);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.quiz-head{
+  display:flex;
+  justify-content: space-between;
+  align-items:flex-start;
+  gap: 10px;
+}
+
+#q-title{
+  font-size: 34px;
+  line-height: 1.1;
+  letter-spacing: -0.2px;
+  margin: 6px 0 10px;
+}
+
+#q-count{
+  font-size: 13px;
+  letter-spacing: 1.2px;
+  text-transform: uppercase;
+  opacity: .85;
+}
+
+/* Cards editoriales */
+.options{
+  margin-top: 18px;
+  display:grid;
+  gap: 12px;
+}
+
+/* Opción tarjeta */
+.opt{
+  padding: 16px 16px;
+  border-radius: 16px;
+  background: rgba(255,255,255,.03);
+  border: 1px solid rgba(255,255,255,.10);
+  cursor: pointer;
+  transition: transform .12s ease, background .12s ease, border-color .12s ease;
+}
+
+.opt .k{
+  display:inline-block;
+  min-width: 30px;
+  text-align:center;
+  padding: 4px 10px;
+  border-radius: 999px;
+  border: 1px solid rgba(255,255,255,.12);
+  background: rgba(255,255,255,.05);
+  margin-right: 10px;
+  font-weight: 700;
+  font-size: 13px;
+  opacity: .9;
+}
+
+.opt:hover{
+  background: rgba(255,255,255,.06);
+  border-color: rgba(255,255,255,.18);
+  transform: translateY(-1px);
+}
+
+.opt:active{
+  transform: translateY(0px) scale(.995);
+}
+
+.opt.selected{
+  background: rgba(255,255,255,.08);
+  border-color: rgba(255,255,255,.30);
+}
+
+/* Animación elegante */
+.fade-in{
+  animation: fadeIn .22s ease forwards;
+}
+@keyframes fadeIn{
+  from{ opacity: 0; transform: translateY(8px); }
+  to{ opacity: 1; transform: translateY(0); }
+}
+
+/* =========================
+   GOLD CARD: ÍNDICE
+   ========================= */
+.gold-card{
+  margin-top: 18px;
+  padding: 22px 18px;
+  border-radius: 18px;
+  border: 1px solid var(--goldLine);
+  background: linear-gradient(
+    145deg,
+    rgba(212,175,55,0.06),
+    rgba(255,255,255,0.02)
+  );
+  animation: fadeInUp 0.6s ease forwards;
+  opacity: 0;
+}
+
+@keyframes fadeInUp{
+  from{ transform: translateY(14px); opacity: 0; }
+  to{ transform: translateY(0); opacity: 1; }
+}
+
+.gold-title{
+  font-size: 12px;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: rgba(212,175,55,0.90);
+  margin-bottom: 6px;
+}
+
+.gold-percentage{
+  font-size: 46px;
+  font-weight: 650;
+  color: var(--gold);
+  margin: 6px 0 10px;
+}
+
+.gold-text{
+  color: rgba(255,255,255,0.86);
+  font-size: 15px;
+  line-height: 1.65;
+}
+
+.badge{
+  display:inline-block;
+  padding: 4px 10px;
+  border-radius: 999px;
+  border: 1px solid rgba(255,255,255,.12);
+  background: rgba(255,255,255,.05);
+  color: rgba(255,255,255,.86);
+  font-size: 12px;
+  letter-spacing: .8px;
+  text-transform: uppercase;
+}
+
