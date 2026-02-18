@@ -130,12 +130,14 @@
       <h2 id="result-title">Tu resultado</h2>
       <p class="muted" id="result-subtitle"></p>
 
+      <!-- Breve (impacto) -->
       <div class="result-box" id="result-brief"></div>
 
       <div class="cta-row">
         <button class="btn ghost" id="btn-toggle-details">Ver análisis completo</button>
       </div>
 
+      <!-- Completo (expandible) -->
       <div class="result-box hidden" id="result-details"></div>
 
       <div class="cta-row split stack">
@@ -155,7 +157,8 @@
     </footer>
   </main>
 
-  <script src="app.js"></script>
+  <!-- ✅ defer evita problemas de carga en mobile -->
+  <script src="app.js" defer></script>
 </body>
 </html>
 
