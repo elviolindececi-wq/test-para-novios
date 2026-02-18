@@ -487,4 +487,17 @@ hr{
   .btn{ padding: 12px 12px; }
 }
 
+/* =========================
+   QUIZ: botón Siguiente solo desktop
+   ========================= */
+
+/* Mobile: ocultar botón Siguiente */
+@media (max-width: 860px){
+  #btn-next{ display:none !important; }
+}
+
+/* Desktop: mostrar botón Siguiente */
+@media (min-width: 861px){
+  #btn-next{ display:inline-flex !important; }
+}
 
