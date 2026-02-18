@@ -1,0 +1,154 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>El Violín de Ceci — Test para Novios</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <main class="wrap">
+    <header class="brand">
+      <div class="logo">🎻</div>
+      <div>
+        <h1>El Violín de Ceci</h1>
+        <p class="subtitle">Test Premium para Novios</p>
+      </div>
+    </header>
+
+    <!-- SCREEN: INTRO -->
+    <section class="card screen" id="screen-intro">
+      <h2>Su boda no es un evento.<br/>Es una experiencia emocional irrepetible.</h2>
+      <p>
+        En menos de <strong>5 minutos</strong> descubrirán el estilo que define su boda y el
+        <strong>set musical ideal</strong> para convertirla en un momento inolvidable.
+      </p>
+      <div class="cta-row">
+        <button class="btn primary" id="btn-start">Comenzar</button>
+      </div>
+      <p class="fineprint">Al finalizar recibirán un resultado personalizado.</p>
+    </section>
+
+    <!-- SCREEN: LEAD FORM -->
+    <section class="card screen hidden" id="screen-lead">
+      <div class="progress">
+        <div class="bar" style="width: 20%"></div>
+      </div>
+      <h2>Antes de comenzar, cuéntenos un poco sobre ustedes</h2>
+
+      <form id="lead-form" class="form">
+        <div class="field">
+          <label for="nombre">Nombre y apellido <span class="req">*</span></label>
+          <input id="nombre" name="nombre" type="text" placeholder="Ej: Juan Pérez" required />
+        </div>
+
+        <div class="field">
+          <label for="telefono">Teléfono <span class="req">*</span></label>
+          <input id="telefono" name="telefono" type="tel" placeholder="Ej: 0985 123 456" required />
+          <small>Solo lo utilizamos para enviar información personalizada sobre su experiencia musical.</small>
+        </div>
+
+        <div class="field">
+          <label for="fecha_boda">Fecha de la boda <span class="req">*</span></label>
+          <input id="fecha_boda" name="fecha_boda" type="date" required />
+        </div>
+
+        <div class="field">
+          <label for="venue">¿Dónde será su boda? <span class="req">*</span></label>
+          <select id="venue" name="venue" required>
+            <option value="" selected disabled>Elegí una opción</option>
+            <option>Salón tradicional</option>
+            <option>Quinta o estancia</option>
+            <option>Hotel</option>
+            <option>Iglesia + salón</option>
+            <option>Playa / destino</option>
+            <option>Aún no lo definimos</option>
+            <option>Otro</option>
+          </select>
+        </div>
+
+        <div class="field hidden" id="venue-otro-field">
+          <label for="venue_otro">Especificar venue</label>
+          <input id="venue_otro" name="venue_otro" type="text" placeholder="Ej: Casa familiar, chacra, etc." />
+        </div>
+
+        <div class="field">
+          <label for="invitados">Cantidad aproximada de invitados <span class="req">*</span></label>
+          <select id="invitados" name="invitados" required>
+            <option value="" selected disabled>Elegí una opción</option>
+            <option>Menos de 80</option>
+            <option>80 – 150</option>
+            <option>150 – 250</option>
+            <option>Más de 250</option>
+          </select>
+        </div>
+
+        <div class="field">
+          <label for="vision_musical">¿Cómo imaginan la experiencia musical? <span class="req">*</span></label>
+          <select id="vision_musical" name="vision_musical" required>
+            <option value="" selected disabled>Elegí una opción</option>
+            <option>Algo sencillo y emotivo para acompañar el momento</option>
+            <option>Algo elegante y bien producido</option>
+            <option>Algo impactante y memorable</option>
+            <option>Queremos asesoramiento profesional para definirlo</option>
+          </select>
+        </div>
+
+        <div class="cta-row">
+          <button class="btn primary" type="submit">Descubrir nuestro estilo</button>
+        </div>
+
+        <p class="fineprint"><span class="req">*</span> Campos obligatorios.</p>
+      </form>
+    </section>
+
+    <!-- SCREEN: QUESTIONS -->
+    <section class="card screen hidden" id="screen-quiz">
+      <div class="progress">
+        <div class="bar" id="quiz-bar" style="width: 30%"></div>
+      </div>
+
+      <div class="quiz-head">
+        <h2 id="q-title">Pregunta</h2>
+        <p class="muted" id="q-count">1 de 8</p>
+      </div>
+
+      <div id="q-options" class="options"></div>
+
+      <div class="cta-row split">
+        <button class="btn ghost" id="btn-prev" disabled>Volver</button>
+        <button class="btn primary" id="btn-next" disabled>Siguiente</button>
+      </div>
+    </section>
+
+    <!-- SCREEN: RESULT -->
+    <section class="card screen hidden" id="screen-result">
+      <div class="progress">
+        <div class="bar" style="width: 100%"></div>
+      </div>
+
+      <h2 id="result-title">Tu resultado</h2>
+      <p class="muted" id="result-subtitle"></p>
+
+      <div class="result-box" id="result-content"></div>
+
+      <div class="cta-row split stack">
+        <button class="btn ghost" id="btn-retry">Volver a hacer el test</button>
+        <a class="btn primary" id="btn-wa" href="https://wa.me/595985689454" target="_blank" rel="noopener">
+          Contactar por WhatsApp con Ceci
+        </a>
+      </div>
+
+      <p class="fineprint">
+        Si quieren, pueden enviarnos sus canciones favoritas y diseñamos un repertorio personalizado.
+      </p>
+    </section>
+
+    <footer class="foot">
+      <span>© El Violín de Ceci</span>
+    </footer>
+  </main>
+
+  <script src="app.js"></script>
+</body>
+</html>
