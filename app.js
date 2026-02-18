@@ -186,6 +186,208 @@ const musicModules = {
 };
 
 // ================================
+// SETLISTS (por arquetipo)
+// ================================
+const setlists = {
+  A: {
+    title: "Setlist recomendado — Clásicos Elegantes",
+    moments: [
+      {
+        name: "Ceremonia (clásico refinado + emoción contenida)",
+        songs: [
+          "Canon in D — Pachelbel",
+          "A Thousand Years — Christina Perri (instrumental)",
+          "Perfect — Ed Sheeran (instrumental)",
+          "All of Me — John Legend (instrumental)",
+          "Clair de Lune — Debussy",
+          "Hallelujah — Leonard Cohen (instrumental)"
+        ]
+      },
+      {
+        name: "Cóctel / Recepción (luxury lounge, conversación)",
+        songs: [
+          "La Vie En Rose — Édith Piaf (instrumental)",
+          "Fly Me to the Moon — Sinatra (instrumental)",
+          "At Last — Etta James (instrumental)",
+          "Can’t Help Falling in Love — Elvis (instrumental)",
+          "Your Song — Elton John (instrumental)",
+          "Stand By Me — Ben E. King (instrumental)"
+        ]
+      },
+      {
+        name: "Momento especial (firma Ceci: elegante y memorable)",
+        songs: [
+          "Viva la Vida — Coldplay (instrumental elegante)",
+          "Yellow — Coldplay (instrumental)",
+          "Marry You — Bruno Mars (instrumental)"
+        ]
+      }
+    ]
+  },
+
+  B: {
+    title: "Setlist recomendado — Románticos Naturales",
+    moments: [
+      {
+        name: "Ceremonia (orgánico, cálido, auténtico)",
+        songs: [
+          "Turning Page — Sleeping At Last (instrumental)",
+          "I Get to Love You — Ruelle (instrumental)",
+          "You Are the Reason — Calum Scott (instrumental)",
+          "Can’t Help Falling in Love — instrumental suave",
+          "Better Together — Jack Johnson (instrumental)",
+          "Bloom — The Paper Kites (instrumental)"
+        ]
+      },
+      {
+        name: "Cóctel / Recepción (indie-pop delicado, luz dorada)",
+        songs: [
+          "Ho Hey — The Lumineers (instrumental)",
+          "Riptide — Vance Joy (instrumental)",
+          "Dreams — Fleetwood Mac (instrumental)",
+          "Make You Feel My Love — Adele (instrumental)",
+          "Photograph — Ed Sheeran (instrumental)",
+          "Somewhere Only We Know — Keane (instrumental)"
+        ]
+      },
+      {
+        name: "Cierre emotivo",
+        songs: [
+          "A Sky Full of Stars — Coldplay (instrumental suave)",
+          "Perfect — Ed Sheeran (instrumental)"
+        ]
+      }
+    ]
+  },
+
+  C: {
+    title: "Setlist recomendado — Creativos Vanguardistas",
+    moments: [
+      {
+        name: "Ceremonia (editorial, conceptual, con identidad)",
+        songs: [
+          "Experience — Ludovico Einaudi",
+          "Nuvole Bianche — Ludovico Einaudi",
+          "Time — Hans Zimmer",
+          "Cornfield Chase — Interstellar (instrumental)",
+          "Young and Beautiful — Lana del Rey (instrumental)",
+          "Bad Guy — Billie Eilish (instrumental elegante, guiño inesperado)"
+        ]
+      },
+      {
+        name: "Cóctel / Recepción (curado, cool, sofisticado)",
+        songs: [
+          "Sweet Disposition — The Temper Trap (instrumental)",
+          "Midnight City — M83 (instrumental)",
+          "Blinding Lights — The Weeknd (instrumental, classy)",
+          "Levitating — Dua Lipa (instrumental)",
+          "Electric Feel — MGMT (instrumental)",
+          "Take Five — Dave Brubeck (violin/piano vibe)"
+        ]
+      },
+      {
+        name: "Momento WOW (intervención corta y diseñada)",
+        songs: [
+          "Viva la Vida — Coldplay (arreglo sorpresa)",
+          "Titanium — David Guetta (instrumental épico)",
+          "Shut Up and Dance — Walk the Moon (instrumental energético)"
+        ]
+      }
+    ]
+  },
+
+  D: {
+    title: "Setlist recomendado — Sociales Festivos",
+    moments: [
+      {
+        name: "Ceremonia (emocionante, pero con ritmo)",
+        songs: [
+          "Marry You — Bruno Mars (instrumental)",
+          "A Thousand Years — instrumental (versión upbeat)",
+          "I’m Yours — Jason Mraz (instrumental)",
+          "Can’t Stop the Feeling — Justin Timberlake (instrumental suave)",
+          "Love on Top — Beyoncé (instrumental)",
+          "Signed, Sealed, Delivered — Stevie Wonder (instrumental)"
+        ]
+      },
+      {
+        name: "Cóctel / Recepción (subiendo energía con estilo)",
+        songs: [
+          "Uptown Funk — Bruno Mars (instrumental)",
+          "September — Earth, Wind & Fire (instrumental)",
+          "I Wanna Dance With Somebody — Whitney Houston (instrumental)",
+          "Shivers — Ed Sheeran (instrumental)",
+          "Dance Monkey — Tones and I (instrumental)",
+          "Happy — Pharrell Williams (instrumental)"
+        ]
+      },
+      {
+        name: "Activación / transición a fiesta (mini show)",
+        songs: [
+          "Don’t Stop Me Now — Queen (instrumental)",
+          "Titanium — instrumental épico",
+          "Viva la Vida — instrumental poderoso"
+        ]
+      }
+    ]
+  },
+
+  E: {
+    title: "Setlist recomendado — Íntimos Emocionales",
+    moments: [
+      {
+        name: "Ceremonia (minimalismo emocional, piel de gallina)",
+        songs: [
+          "River Flows in You — Yiruma",
+          "Kiss the Rain — Yiruma",
+          "Comptine d’un autre été — Yann Tiersen",
+          "Clair de Lune — Debussy",
+          "All of Me — John Legend (instrumental)",
+          "Perfect — Ed Sheeran (instrumental, versión íntima)"
+        ]
+      },
+      {
+        name: "Cóctel / Recepción (cálido, cercano, con significado)",
+        songs: [
+          "Make You Feel My Love — Adele (instrumental)",
+          "La Vie En Rose — instrumental",
+          "Can’t Help Falling in Love — instrumental",
+          "Hallelujah — instrumental",
+          "Somewhere Over the Rainbow — instrumental",
+          "Stand By Me — instrumental suave"
+        ]
+      },
+      {
+        name: "Momento simbólico (para lágrimas felices)",
+        songs: [
+          "A Thousand Years — instrumental (versión íntima)",
+          "You Are the Reason — instrumental"
+        ]
+      }
+    ]
+  }
+};
+
+// Ajustes por intensidad (M1/M2/M3)
+const intensityAddOns = {
+  M1: {
+    title: "Ajuste por intensidad (M1 — Acompañamiento sutil)",
+    note: "Mantener arreglos suaves, tempos moderados, y prioridad a atmósfera. Menos cambios bruscos.",
+    add: ["Clair de Lune — Debussy", "Kiss the Rain — Yiruma", "Turning Page — Sleeping At Last (instrumental)"]
+  },
+  M2: {
+    title: "Ajuste por intensidad (M2 — Protagonismo sofisticado)",
+    note: "Sumar piezas “ancla” para entradas y transiciones. Arreglos más marcados y coordinación con timing.",
+    add: ["Canon in D — Pachelbel", "La Vie En Rose — instrumental", "Viva la Vida — Coldplay (instrumental elegante)"]
+  },
+  M3: {
+    title: "Ajuste por intensidad (M3 — Momento WOW)",
+    note: "Agregar 1–2 intervenciones sorpresa cortas (60–90s) con arreglos que generen reacción sin perder estética.",
+    add: ["Titanium — instrumental épico", "Blinding Lights — instrumental classy", "Uptown Funk — instrumental (mini show)"]
+  }
+};
+
+// ================================
 // PRIORITY + INDEX
 // ================================
 function daysUntil(dateStr){
