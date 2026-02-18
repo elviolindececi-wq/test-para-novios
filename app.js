@@ -1,484 +1,860 @@
-/* =========================
-   EL VIOLÍN DE CECI — PREMIUM UI (IMPROVED)
-   ========================= */
+// ================================
+// EL VIOLÍN DE CECI — TEST PREMIUM (FINAL)
+// ✅ Fix hidden + .hidden (para que NUNCA se trabe)
+// ✅ Resultado SOLO al hacer clic en "Quiero ver mis resultados"
+// ✅ Opciones accesibles (button)
+// ✅ Envío a Apps Script + WhatsApp (NO tocado)
+// ================================
 
-:root{
-  --bg:#0e0f14;
-  --txt:#f2f2f6;
-  --muted:#b7b8c6;
-  --line:rgba(255,255,255,.10);
-  --shadow: 0 16px 50px rgba(0,0,0,.45);
-  --radius:18px;
+const WEBHOOK_URL = "https://script.google.com/macros/s/AKfycbyq6c75P3nxAqX1WEj47zR468SyBmyrdKdQJiStmcVvS8SZYpkMkpqmHnd7lCyIYLO2kg/exec";
+const WHATSAPP_BASE = "https://wa.me/595985689454";
 
-  /* Gold (premium) */
-  --gold:#d4af37;
-  --gold2:#f3d27a;
-  --gold3:#b8922c;
-  --goldLine: rgba(212,175,55,.45);
+const $ = (sel) => document.querySelector(sel);
 
-  /* Surfaces */
-  --surface: rgba(255,255,255,.035);
+function show(id){
+  document.querySelectorAll(".screen").forEach(s => {
+    s.hidden = true;
+    s.setAttribute("hidden", "hidden");
+    s.classList.add("hidden");
+  });
 
-  /* Focus */
-  --focus: rgba(255,255,255,.32);
-}
+  const el = document.querySelector(id);
+  if (!el) return console.error("No existe screen:", id);
 
-*{box-sizing:border-box}
-html, body{ height: 100%; }
+  el.hidden = false;
+  el.removeAttribute("hidden");
+  el.classList.remove("hidden");
 
-body{
-  margin:0;
-  background:
-    radial-gradient(1100px 720px at 18% 10%, rgba(27,30,50,.95) 0%, rgba(14,15,20,1) 58%),
-    radial-gradient(900px 600px at 80% 0%, rgba(212,175,55,.10) 0%, rgba(14,15,20,0) 55%),
-    radial-gradient(900px 600px at 80% 100%, rgba(120,180,255,.08) 0%, rgba(14,15,20,0) 55%),
-    var(--bg);
-  color:var(--txt);
-  font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
+  window.scrollTo({ top: 0, behavior: "smooth" });
 }
 
-.wrap{
-  max-width: 900px;
-  margin: 0 auto;
-  padding: 26px 16px 44px;
+function escapeHtml(str){
+  return String(str)
+    .replace(/&/g,"&amp;")
+    .replace(/</g,"&lt;")
+    .replace(/>/g,"&gt;")
+    .replace(/"/g,"&quot;")
+    .replace(/'/g,"&#039;");
 }
 
-/* hide utility: screens usan hidden (atributo) */
-[hidden]{ display:none !important; }
+// ================================
+// QUESTIONS (10)
+// ================================
+const questions = [
+  {
+    title: "🖼 Si su boda fuera una escena de película, sería…",
+    options: [
+      { key:"A", text:"Una entrada majestuosa en un salón elegante. Todo se siente impecable.", music:"M2" },
+      { key:"B", text:"Ceremonia al aire libre con luz dorada y emoción genuina.", music:"M1" },
+      { key:"C", text:"Un concepto inesperado, editorial, con diseño y detalles únicos.", music:"M3" },
+      { key:"D", text:"Celebración vibrante: aplausos, risas y energía desde el inicio.", music:"M3" },
+      { key:"E", text:"Momento íntimo: silencio, respiración contenida, lágrimas sinceras.", music:"M1" }
+    ]
+  },
+  {
+    title: "📍 Elijan el espacio que más los representa:",
+    options: [
+      { key:"A", text:"Hotel clásico o salón con arquitectura imponente.", music:"M2" },
+      { key:"B", text:"Jardín / quinta / entorno natural.", music:"M1" },
+      { key:"C", text:"Galería / industrial / lugar poco convencional.", music:"M3" },
+      { key:"D", text:"Salón amplio pensado para una fiesta inolvidable.", music:"M3" },
+      { key:"E", text:"Espacio pequeño con significado emocional.", music:"M1" }
+    ]
+  },
+  {
+    title: "🎶 Su entrada debería sentirse como…",
+    options: [
+      { key:"A", text:"Solemne y elegante, perfectamente sincronizada.", music:"M2" },
+      { key:"B", text:"Dulce y romántica, sin forzar nada.", music:"M1" },
+      { key:"C", text:"Sorprendente: un giro inesperado que define el tono.", music:"M3" },
+      { key:"D", text:"Energética: aplausos, emoción y celebración.", music:"M3" },
+      { key:"E", text:"Personal e íntima, como si el mundo se apagara.", music:"M1" }
+    ]
+  },
+  {
+    title: "💬 ¿Qué quieren que sus invitados digan al irse?",
+    options: [
+      { key:"A", text:"“Qué boda tan elegante y bien pensada.”", music:"M2" },
+      { key:"B", text:"“Se sentía tanto amor en el aire.”", music:"M1" },
+      { key:"C", text:"“Nunca vi algo así.”", music:"M3" },
+      { key:"D", text:"“Fue la mejor fiesta del año.”", music:"M3" },
+      { key:"E", text:"“Fue pequeña, pero la más significativa.”", music:"M1" }
+    ]
+  },
+  {
+    title: "🎻 ¿Qué rol debería tener la música en su boda?",
+    options: [
+      { key:"A", text:"Acompañar con sofisticación y marcar momentos importantes.", music:"M2" },
+      { key:"B", text:"Crear atmósfera romántica sin invadir.", music:"M1" },
+      { key:"C", text:"Ser parte del concepto y sorprender.", music:"M3" },
+      { key:"D", text:"Encender la energía y marcar ritmo de celebración.", music:"M3" },
+      { key:"E", text:"Intensificar los momentos más emocionales.", music:"M1" }
+    ]
+  },
+  {
+    title: "✨ Elijan la estética que más los identifica:",
+    options: [
+      { key:"A", text:"Clásico refinado, tonos neutros, lujo sutil.", music:"M2" },
+      { key:"B", text:"Natural, orgánico, suave.", music:"M1" },
+      { key:"C", text:"Editorial, audaz, con detalles inesperados.", music:"M3" },
+      { key:"D", text:"Glamour festivo, con toques llamativos.", music:"M3" },
+      { key:"E", text:"Minimalismo emocional, elegante y profundo.", music:"M1" }
+    ]
+  },
+  {
+    title: "🥂 ¿Cómo imaginan el cóctel?",
+    options: [
+      { key:"A", text:"Instrumental elegante para conversación y ambiente.", music:"M2" },
+      { key:"B", text:"Melodías suaves que fluyan naturalmente.", music:"M1" },
+      { key:"C", text:"Intervenciones inesperadas (momentos ‘wow’ sutiles).", music:"M3" },
+      { key:"D", text:"Algo animado que empiece a subir la energía.", music:"M3" },
+      { key:"E", text:"Íntimo y cálido, música que invita a abrazos.", music:"M1" }
+    ]
+  },
+  {
+    title: "🌙 ¿Qué iluminación los representa?",
+    options: [
+      { key:"A", text:"Candelabros y luz cálida sofisticada.", music:"M2" },
+      { key:"B", text:"Luces cálidas entre árboles / velas delicadas.", music:"M1" },
+      { key:"C", text:"Luz dramática, contrastes, atmósfera editorial.", music:"M3" },
+      { key:"D", text:"Luces vibrantes y dinámicas.", music:"M3" },
+      { key:"E", text:"Iluminación tenue, íntima.", music:"M1" }
+    ]
+  },
+  {
+    title: "🕊 Una palabra que describe su relación:",
+    options: [
+      { key:"A", text:"Complicidad.", music:null },
+      { key:"B", text:"Ternura.", music:null },
+      { key:"C", text:"Intensidad.", music:null },
+      { key:"D", text:"Diversión.", music:null },
+      { key:"E", text:"Profundidad.", music:null }
+    ]
+  },
+  {
+    title: "🎼 Si pudieran elegir una sola sensación para su ceremonia:",
+    options: [
+      { key:"A", text:"Admiración.", music:"M2" },
+      { key:"B", text:"Emoción pura.", music:"M1" },
+      { key:"C", text:"Impacto.", music:"M3" },
+      { key:"D", text:"Euforia.", music:"M3" },
+      { key:"E", text:"Conexión.", music:"M1" }
+    ]
+  }
+];
 
-/* =========================
-   BRAND
-   ========================= */
-.brand{
-  display:flex;
-  gap:14px;
-  align-items:center;
-  margin-bottom: 18px;
-}
-.logo{
-  width:46px;height:46px;
-  display:grid;place-items:center;
-  border:1px solid var(--line);
-  border-radius:14px;
-  background: linear-gradient(180deg, rgba(255,255,255,.08), rgba(255,255,255,.03));
-  box-shadow: 0 10px 30px rgba(0,0,0,.35);
-}
-.brand h1{
-  margin:0;
-  font-size: 18px;
-  letter-spacing:.2px;
-}
-.subtitle{
-  margin:2px 0 0;
-  color:var(--muted);
-  font-size: 13px;
-}
+// ================================
+// ARCHETYPES
+// ================================
+const archetypes = {
+  A: {
+    name: "💎 Clásicos Elegantes",
+    tagline: "La excelencia es el lenguaje del amor.",
+    brief: "Orden, armonía y estética impecable. La emoción es contenida, refinada y profundamente intencional.",
+    full: "Ustedes valoran coherencia y dirección. No improvisan momentos: los diseñan. La música ideal marca entradas y transiciones con elegancia, sin exageración.",
+    set: [
+      "Violín + piano (ideal con baby grand piano shell)",
+      "Ceremonia: clásico/romántico refinado",
+      "Cóctel: instrumental elegante con pop reinterpretado"
+    ]
+  },
+  B: {
+    name: "🌿 Románticos Naturales",
+    tagline: "Si no se siente auténtico, no es para nosotros.",
+    brief: "Calidez, luz suave y emoción genuina. Menos show, más verdad.",
+    full: "Priorizan conexión por encima del impacto. La música acompaña y sostiene la atmósfera sin invadir: romántica, orgánica, íntima.",
+    set: [
+      "Violín + piano íntimo",
+      "Ceremonia: romántico suave",
+      "Cóctel: indie/pop delicado instrumental"
+    ]
+  },
+  C: {
+    name: "🎨 Creativos Vanguardistas",
+    tagline: "No queremos una boda. Queremos una experiencia.",
+    brief: "Editorial, audaz y con identidad propia. Un concepto, no un formato.",
+    full: "Piensan en narrativa y diseño. La música puede sorprender con arreglos únicos y giros inesperados, siempre con estética cuidada.",
+    set: [
+      "Violín protagonista + piano",
+      "Arreglos exclusivos",
+      "Momento ‘wow’ elegante (performance breve)"
+    ]
+  },
+  D: {
+    name: "🎉 Sociales Festivos",
+    tagline: "Queremos que todos recuerden esta noche.",
+    brief: "Celebración, energía y momentos compartidos. La emoción es expansiva.",
+    full: "Diseñan pensando en la vibra del invitado. La música marca el ritmo y puede subir energía con inteligencia: transiciones hacia una fiesta inolvidable.",
+    set: [
+      "Violín con presencia escénica",
+      "Hits instrumental en cóctel",
+      "Performance sorpresa para activar"
+    ]
+  },
+  E: {
+    name: "🤍 Íntimos Emocionales",
+    tagline: "No buscamos espectáculo. Buscamos significado.",
+    brief: "Profundidad, historia y emoción silenciosa. Momentos que se quedan en la piel.",
+    full: "Priorizan lo verdadero. La música ideal es puente emocional: acompaña votos, lecturas y momentos simbólicos con sensibilidad.",
+    set: [
+      "Violín + piano minimalista",
+      "Canciones personalizadas",
+      "Momentos íntimos dirigidos con sensibilidad"
+    ]
+  }
+};
 
-/* =========================
-   CARDS + SCREENS
-   ========================= */
-.card{
-  background: linear-gradient(180deg, rgba(255,255,255,.055) 0%, rgba(255,255,255,.03) 100%);
-  border: 1px solid rgba(255,255,255,.10);
-  box-shadow: var(--shadow);
-  border-radius: var(--radius);
-  padding: 22px;
-  position: relative;
-  overflow: hidden;
-}
-.card:before{
-  content:"";
-  position:absolute;
-  inset:-2px;
-  background:
-    radial-gradient(600px 220px at 18% 0%, rgba(255,255,255,.06), transparent 60%),
-    radial-gradient(520px 220px at 82% 0%, rgba(212,175,55,.05), transparent 60%);
-  pointer-events:none;
-}
-.card > *{ position: relative; }
+const musicModules = {
+  M1: { name:"Acompañamiento Sutil", brief:"Presente, pero nunca compite.", full:"Ideal para atmósfera romántica e íntima. Violín + piano con arreglos suaves y transiciones fluidas." },
+  M2: { name:"Protagonismo Sofisticado", brief:"Marca momentos clave con intención.", full:"La música guía entradas y clímax emocionales con coherencia estética. Violín + piano con arreglos personalizados." },
+  M3: { name:"Momento WOW", brief:"Sorpresa elegante y memorable.", full:"Intervenciones breves y estratégicas para generar reacción. Performance sorpresa con estética cuidada." }
+};
 
-.screen{ margin-top: 14px; }
+// ================================
+// SETLISTS (por arquetipo)
+// ================================
+const setlists = {
+  A: {
+    title: "Setlist recomendado — Clásicos Elegantes",
+    moments: [
+      { name: "Ceremonia (clásico refinado + emoción contenida)", songs: [
+        "Canon in D — Pachelbel",
+        "Clair de Lune — Debussy",
+        "A Thousand Years — Christina Perri (instrumental)",
+        "Perfect — Ed Sheeran (instrumental)",
+        "All of Me — John Legend (instrumental)"
+      ]},
+      { name: "Cóctel / Recepción (luxury lounge, conversación)", songs: [
+        "La Vie En Rose — Édith Piaf (instrumental)",
+        "Fly Me to the Moon — Sinatra (instrumental)",
+        "At Last — Etta James (instrumental)",
+        "Can’t Help Falling in Love — Elvis (instrumental)"
+      ]},
+      { name: "Momento especial (firma Ceci)", songs: [
+        "Viva la Vida — Coldplay (instrumental elegante)",
+        "Yellow — Coldplay (instrumental)"
+      ]}
+    ]
+  },
+  B: {
+    title: "Setlist recomendado — Románticos Naturales",
+    moments: [
+      { name: "Ceremonia (orgánico, cálido, auténtico)", songs: [
+        "Turning Page — Sleeping At Last (instrumental)",
+        "I Get to Love You — Ruelle (instrumental)",
+        "You Are the Reason — Calum Scott (instrumental)",
+        "Bloom — The Paper Kites (instrumental)"
+      ]},
+      { name: "Cóctel / Recepción (indie-pop delicado)", songs: [
+        "Ho Hey — The Lumineers (instrumental)",
+        "Riptide — Vance Joy (instrumental)",
+        "Somewhere Only We Know — Keane (instrumental)",
+        "Photograph — Ed Sheeran (instrumental)"
+      ]},
+      { name: "Cierre emotivo", songs: [
+        "A Sky Full of Stars — Coldplay (instrumental suave)"
+      ]}
+    ]
+  },
+  C: {
+    title: "Setlist recomendado — Creativos Vanguardistas",
+    moments: [
+      { name: "Ceremonia (editorial, conceptual)", songs: [
+        "Experience — Ludovico Einaudi",
+        "Nuvole Bianche — Ludovico Einaudi",
+        "Time — Hans Zimmer",
+        "Young and Beautiful — Lana del Rey (instrumental)"
+      ]},
+      { name: "Cóctel / Recepción (curado, cool)", songs: [
+        "Midnight City — M83 (instrumental)",
+        "Blinding Lights — The Weeknd (instrumental, classy)",
+        "Levitating — Dua Lipa (instrumental)",
+        "Take Five — Dave Brubeck (vibe)"
+      ]},
+      { name: "Momento WOW (intervención)", songs: [
+        "Titanium — David Guetta (instrumental épico)",
+        "Viva la Vida — Coldplay (arreglo sorpresa)"
+      ]}
+    ]
+  },
+  D: {
+    title: "Setlist recomendado — Sociales Festivos",
+    moments: [
+      { name: "Ceremonia (emocionante con ritmo)", songs: [
+        "Marry You — Bruno Mars (instrumental)",
+        "I’m Yours — Jason Mraz (instrumental)",
+        "Love on Top — Beyoncé (instrumental)"
+      ]},
+      { name: "Cóctel / Recepción (subiendo energía)", songs: [
+        "Uptown Funk — Bruno Mars (instrumental)",
+        "September — Earth, Wind & Fire (instrumental)",
+        "Happy — Pharrell Williams (instrumental)"
+      ]},
+      { name: "Activación / transición a fiesta", songs: [
+        "Don’t Stop Me Now — Queen (instrumental)",
+        "Titanium — instrumental épico"
+      ]}
+    ]
+  },
+  E: {
+    title: "Setlist recomendado — Íntimos Emocionales",
+    moments: [
+      { name: "Ceremonia (minimalismo emocional)", songs: [
+        "River Flows in You — Yiruma",
+        "Kiss the Rain — Yiruma",
+        "Comptine d’un autre été — Yann Tiersen",
+        "Clair de Lune — Debussy"
+      ]},
+      { name: "Cóctel / Recepción (cálido y cercano)", songs: [
+        "Make You Feel My Love — Adele (instrumental)",
+        "Hallelujah — instrumental",
+        "Stand By Me — instrumental suave"
+      ]},
+      { name: "Momento simbólico", songs: [
+        "A Thousand Years — instrumental (íntimo)"
+      ]}
+    ]
+  }
+};
 
-h2{
-  margin: 6px 0 10px;
-  font-size: 26px;
-  line-height: 1.15;
-  letter-spacing: -0.2px;
-}
+// Ajustes por intensidad (M1/M2/M3)
+const intensityAddOns = {
+  M1: {
+    title: "Ajuste por intensidad (M1 — Acompañamiento sutil)",
+    note: "Arreglos suaves, tempos moderados y prioridad a atmósfera. Menos cambios bruscos.",
+    add: ["Clair de Lune — Debussy", "Kiss the Rain — Yiruma", "Turning Page — Sleeping At Last (instrumental)"]
+  },
+  M2: {
+    title: "Ajuste por intensidad (M2 — Protagonismo sofisticado)",
+    note: "Sumar piezas “ancla” para entradas y transiciones. Arreglos marcados y coordinación con timing.",
+    add: ["Canon in D — Pachelbel", "La Vie En Rose — instrumental", "Viva la Vida — Coldplay (instrumental elegante)"]
+  },
+  M3: {
+    title: "Ajuste por intensidad (M3 — Momento WOW)",
+    note: "Agregar 1–2 intervenciones sorpresa cortas (60–90s) que generen reacción sin perder estética.",
+    add: ["Titanium — instrumental épico", "Blinding Lights — instrumental classy", "Uptown Funk — instrumental (mini show)"]
+  }
+};
 
-/* TITULOS EN DORADO */
-h2,
-#q-title,
-#result-title{
-  background: linear-gradient(
-    135deg,
-    #f5e6b8 0%,
-    var(--gold2) 20%,
-    var(--gold) 48%,
-    var(--gold3) 70%,
-    var(--gold2) 100%
-  );
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-}
-
-p{ color: var(--txt); line-height: 1.62; margin: 0 0 10px; }
-.muted{ color: var(--muted); }
-
-.fineprint{
-  margin-top: 12px;
-  font-size: 12.5px;
-  color: var(--muted);
-}
-
-.hint{
-  margin-top: 6px;
-  font-size: 12.5px;
-  opacity: .9;
-}
-
-/* =========================
-   PROGRESS (GOLD)
-   ========================= */
-.progress{
-  width:100%;
-  height:10px;
-  border-radius: 999px;
-  background: rgba(255,255,255,.055);
-  overflow:hidden;
-  margin-bottom: 14px;
-  border: 1px solid rgba(255,255,255,.10);
-}
-
-.bar{
-  height:100%;
-  width: 0%;
-  background: linear-gradient(90deg, var(--gold), var(--gold2), var(--gold3));
-  box-shadow:
-    0 0 12px rgba(212,175,55,.35),
-    inset 0 0 8px rgba(255,255,255,.22);
-  transition: width .4s ease;
-  position: relative;
-  overflow: hidden;
-}
-
-.bar::after{
-  content:"";
-  position:absolute;
-  top:0;
-  left:-50%;
-  width:50%;
-  height:100%;
-  background: linear-gradient(90deg, transparent, rgba(255,255,255,.30), transparent);
-  animation: shine 2.8s infinite;
-}
-@keyframes shine{
-  0%{ left:-50%; }
-  100%{ left:120%; }
-}
-
-/* =========================
-   FORM
-   ========================= */
-.form{
-  display:grid;
-  gap: 14px;
-  margin-top: 14px;
-}
-.field label{
-  display:block;
-  font-size: 13px;
-  color: var(--muted);
-  margin-bottom: 6px;
-}
-.field input, .field select{
-  width:100%;
-  padding: 12px 12px;
-  border-radius: 12px;
-  border: 1px solid rgba(255,255,255,.12);
-  background: rgba(0,0,0,.22);
-  color: var(--txt);
-  outline:none;
-  transition: border-color .15s ease, box-shadow .15s ease, transform .06s ease;
-}
-.field input:focus, .field select:focus{
-  border-color: var(--focus);
-  box-shadow: 0 0 0 4px rgba(255,255,255,.06);
-}
-.field input:active, .field select:active{
-  transform: scale(.998);
-}
-.field small{
-  display:block;
-  color: var(--muted);
-  margin-top: 6px;
-  font-size: 12px;
-}
-
-.req{ color: rgba(255,255,255,.85); }
-
-/* =========================
-   BUTTONS
-   ========================= */
-.cta-row{
-  display:flex;
-  gap: 10px;
-  margin-top: 14px;
-}
-.split{ justify-content: space-between; }
-.stack{ flex-direction: column; }
-
-.btn{
-  appearance:none;
-  border: 1px solid rgba(255,255,255,.12);
-  background: rgba(255,255,255,.06);
-  color: var(--txt);
-  padding: 12px 14px;
-  border-radius: 12px;
-  font-weight: 650;
-  cursor: pointer;
-  text-decoration:none;
-  text-align:center;
-  transition: transform .08s ease, background .15s ease, border-color .15s ease, box-shadow .15s ease;
-}
-.btn:hover{
-  background: rgba(255,255,255,.10);
-  border-color: rgba(255,255,255,.18);
-  transform: translateY(-1px);
-}
-.btn:active{
-  transform: translateY(0px) scale(.995);
-}
-.btn:disabled{
-  opacity:.45;
-  cursor:not-allowed;
-  transform:none;
-}
-
-.primary{
-  background: rgba(255,255,255,.92);
-  color: #0e0f14;
-  border-color: rgba(255,255,255,.92);
-  box-shadow: 0 10px 26px rgba(0,0,0,.25);
-}
-.primary:hover{
-  background: #ffffff;
-  box-shadow: 0 14px 30px rgba(0,0,0,.30);
-}
-.ghost{ background: transparent; }
-
-.btn:focus-visible{
-  outline: none;
-  box-shadow: 0 0 0 4px rgba(255,255,255,.10);
-  border-color: rgba(255,255,255,.25);
-}
-
-/* =========================
-   RESULT BOX
-   ========================= */
-.result-box{
-  margin-top: 14px;
-  border: 1px solid rgba(255,255,255,.10);
-  background: rgba(0,0,0,.22);
-  border-radius: 16px;
-  padding: 16px;
-}
-.result-box h3{
-  margin: 0 0 8px;
-  font-size: 18px;
-  letter-spacing: -0.15px;
-}
-.result-box h4{
-  margin: 12px 0 6px;
-  font-size: 15px;
-  color: rgba(255,255,255,.92);
-}
-.result-box ul{ margin: 8px 0 0 18px; }
-.result-box li{ margin: 6px 0; color: var(--txt); }
-
-hr{
-  border:0;
-  border-top:1px solid rgba(255,255,255,.10);
-  margin: 14px 0;
-}
-
-.foot{
-  margin-top: 18px;
-  color: var(--muted);
-  font-size: 12px;
-  text-align:center;
-}
-
-/* =========================
-   QUIZ: FULL-SCREEN EDITORIAL
-   ========================= */
-#screen-quiz.card{
-  padding: 28px 22px;
-  min-height: calc(100dvh - 140px);
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-}
-
-.quiz-head{
-  display:flex;
-  justify-content: space-between;
-  align-items:flex-start;
-  gap: 10px;
-}
-
-#q-title{
-  font-size: 34px;
-  line-height: 1.12;
-  letter-spacing: -0.25px;
-  margin: 6px 0 10px;
-}
-
-#q-count{
-  font-size: 12px;
-  letter-spacing: 1.4px;
-  text-transform: uppercase;
-  opacity: .85;
-}
-
-/* Options */
-.options{
-  margin-top: 18px;
-  display:grid;
-  gap: 12px;
-}
-
-/* Opción como botón */
-.opt{
-  width: 100%;
-  text-align: left;
-  padding: 16px 16px;
-  border-radius: 16px;
-  background: rgba(255,255,255,.03);
-  border: 1px solid rgba(255,255,255,.10);
-  cursor: pointer;
-  transition: transform .12s ease, background .12s ease, border-color .12s ease, box-shadow .12s ease;
-  position: relative;
-  color: var(--txt);
-}
-.opt:hover{
-  background: rgba(255,255,255,.06);
-  border-color: rgba(255,255,255,.18);
-  transform: translateY(-1px);
-}
-.opt:active{
-  transform: translateY(0px) scale(.995);
-}
-.opt:focus-visible{
-  outline: none;
-  box-shadow: 0 0 0 4px rgba(255,255,255,.10);
-  border-color: rgba(255,255,255,.25);
+// ================================
+// PRIORITY + INDEX
+// ================================
+function daysUntil(dateStr){
+  if(!dateStr) return null;
+  const d = new Date(dateStr + "T00:00:00");
+  if (Number.isNaN(d.getTime())) return null;
+  const now = new Date();
+  return Math.ceil((d.getTime() - now.getTime()) / (1000*60*60*24));
 }
 
-/* Letra */
-.opt .k{
-  display:inline-block;
-  min-width: 30px;
-  text-align:center;
-  padding: 4px 10px;
-  border-radius: 999px;
-  border: 1px solid rgba(255,255,255,.12);
-  background: rgba(255,255,255,.05);
-  margin-right: 10px;
-  font-weight: 750;
-  font-size: 13px;
-  opacity: .95;
+function computePriority(lead, intensity){
+  let points = 0;
+
+  if (intensity === "M1") points += 1;
+  if (intensity === "M2") points += 2;
+  if (intensity === "M3") points += 3;
+
+  if (lead.invitados === "80 – 150") points += 1;
+  if (lead.invitados === "150 – 250") points += 2;
+  if (lead.invitados === "Más de 250") points += 3;
+
+  const v = (lead.venue || "").toLowerCase();
+  if (v.includes("salón") || v.includes("salon")) points += 1;
+  if (v.includes("quinta") || v.includes("estancia")) points += 2;
+  if (v.includes("hotel")) points += 2;
+  if (v.includes("playa") || v.includes("destino")) points += 2;
+
+  const days = daysUntil(lead.fecha_boda);
+  if (days !== null){
+    if (days <= 90) points += 3;
+    else if (days <= 180) points += 2;
+    else if (days <= 365) points += 1;
+  }
+
+  let prioridad = "C";
+  if (points >= 8) prioridad = "A";
+  else if (points >= 5) prioridad = "B";
+
+  return { prioridad, points };
 }
 
-/* SELECTED GOLD */
-.opt.selected{
-  background: linear-gradient(135deg, rgba(212,175,55,.14), rgba(243,210,122,.06));
-  border-color: rgba(212,175,55,.75);
-  box-shadow:
-    0 0 0 1px rgba(212,175,55,.20) inset,
-    0 10px 26px rgba(0,0,0,.32),
-    0 0 28px rgba(212,175,55,.16);
-  animation: goldPop .16s ease;
-}
-.opt.selected .k{
-  background: linear-gradient(135deg, var(--gold), var(--gold2));
-  border: none;
-  color: #111;
-  box-shadow: 0 8px 18px rgba(212,175,55,.28);
+function getDesignIndex(prioridad){
+  if (prioridad === "A") return 92;
+  if (prioridad === "B") return 86;
+  return 78;
 }
 
-@keyframes goldPop{
-  from{ transform: scale(.992); }
-  to{ transform: scale(1); }
+function investmentBlock(intensity){
+  if (intensity === "M1") return "Las parejas con su perfil priorizan sensibilidad, coherencia y una personalización moderada.";
+  if (intensity === "M2") return "Las parejas con su perfil invierten estratégicamente en arreglos personalizados y coordinación musical.";
+  return "Las parejas con su perfil suelen priorizar momentos sorpresa, arreglos exclusivos y elementos diferenciales.";
 }
 
-/* Animación suave */
-.fade-in{
-  animation: fadeIn .22s ease forwards;
-}
-@keyframes fadeIn{
-  from{ opacity: 0; transform: translateY(8px); }
-  to{ opacity: 1; transform: translateY(0); }
+// ================================
+// STATE
+// ================================
+let lead = {};
+let currentQ = 0;
+let answers = Array(questions.length).fill(null);
+let intensityAnswers = Array(questions.length).fill(null);
+let sending = false;
+let locked = false;
+
+// ================================
+// ELEMENTS
+// ================================
+const btnStart = $("#btn-start");
+const leadForm = $("#lead-form");
+const venueSel = $("#venue");
+const venueOtroField = $("#venue-otro-field");
+const venueOtroInput = $("#venue_otro");
+
+const quizBar = $("#quiz-bar");
+const qTitle = $("#q-title");
+const qCount = $("#q-count");
+const qHint = $("#q-hint");
+const qOptions = $("#q-options");
+const btnPrev = $("#btn-prev");
+const btnNext = $("#btn-next");
+
+const resultTitle = $("#result-title");
+const resultSubtitle = $("#result-subtitle");
+const resultBrief = $("#result-brief");
+const resultDetails = $("#result-details");
+const btnToggleDetails = $("#btn-toggle-details");
+const btnRetry = $("#btn-retry");
+const btnWA = $("#btn-wa");
+
+// ================================
+// EVENTS
+// ================================
+btnStart?.addEventListener("click", () => show("#screen-lead"));
+
+venueSel?.addEventListener("change", () => {
+  const isOtro = venueSel.value === "Otro";
+
+  // robusto: hidden + clase
+  venueOtroField.hidden = !isOtro;
+  venueOtroField.classList.toggle("hidden", !isOtro);
+
+  if (venueOtroInput){
+    venueOtroInput.required = isOtro;
+    if (!isOtro) venueOtroInput.value = "";
+    if (isOtro) venueOtroInput.focus();
+  }
+});
+
+leadForm?.addEventListener("submit", (e) => {
+  e.preventDefault();
+
+  const nombre = $("#nombre")?.value?.trim() || "";
+  const telefono = $("#telefono")?.value?.trim() || "";
+  const fecha_boda = $("#fecha_boda")?.value || "";
+  const venue = $("#venue")?.value || "";
+  const venue_otro = (venueOtroInput?.value || "").trim();
+  const invitados = $("#invitados")?.value || "";
+  const vision_musical = $("#vision_musical")?.value || "";
+
+  if(!nombre || !telefono || !fecha_boda || !venue || !invitados || !vision_musical){
+    alert("Por favor completá todos los campos obligatorios.");
+    return;
+  }
+  if (venue === "Otro" && !venue_otro){
+    alert("Por favor especificá el venue.");
+    return;
+  }
+
+  lead = {
+    nombre,
+    telefono,
+    fecha_boda,
+    venue: venue === "Otro" ? (venue_otro || "Otro") : venue,
+    invitados,
+    vision_musical
+  };
+
+  currentQ = 0;
+  answers = Array(questions.length).fill(null);
+  intensityAnswers = Array(questions.length).fill(null);
+  locked = false;
+
+  renderQuestion();
+  show("#screen-quiz");
+});
+
+btnPrev?.addEventListener("click", () => {
+  if (locked) return;
+  if (currentQ <= 0) return;
+  currentQ--;
+  renderQuestion();
+});
+
+btnNext?.addEventListener("click", async () => {
+  if (locked) return;
+  if (!answers[currentQ]) return;
+
+  const isLast = currentQ === questions.length - 1;
+
+  if (!isLast){
+    currentQ++;
+    renderQuestion();
+    return;
+  }
+
+  // ✅ SOLO ACÁ se muestran resultados
+  locked = true;
+
+  const computed = computeArchetype(answers);
+  const intensity = computeIntensity(intensityAnswers, lead.vision_musical);
+  const pr = computePriority(lead, intensity);
+  const indice = getDesignIndex(pr.prioridad);
+
+  renderResult(computed, intensity, pr.prioridad, indice);
+  show("#screen-result");
+
+  const payload = buildPayload(lead, answers, intensityAnswers, computed, intensity, pr.prioridad, pr.points, indice);
+
+  if (!sending){
+    sending = true;
+    try{
+      await enviarLeadASheets(payload);
+    }catch(err){
+      console.error("Error guardando lead:", err);
+    }finally{
+      sending = false;
+    }
+  }
+
+  locked = false;
+});
+
+btnToggleDetails?.addEventListener("click", () => {
+  const willShow = resultDetails.classList.contains("hidden") || resultDetails.hidden === true;
+
+  resultDetails.hidden = !willShow;
+  resultDetails.classList.toggle("hidden", !willShow);
+
+  btnToggleDetails.textContent = willShow ? "Ocultar análisis completo" : "Ver análisis completo";
+});
+
+btnRetry?.addEventListener("click", () => {
+  lead = {};
+  currentQ = 0;
+  answers = Array(questions.length).fill(null);
+  intensityAnswers = Array(questions.length).fill(null);
+  sending = false;
+  locked = false;
+
+  leadForm.reset();
+  venueOtroField.hidden = true;
+  venueOtroField.classList.add("hidden");
+
+  if (venueOtroInput){
+    venueOtroInput.required = false;
+    venueOtroInput.value = "";
+  }
+
+  resultDetails.hidden = true;
+  resultDetails.classList.add("hidden");
+  btnToggleDetails.textContent = "Ver análisis completo";
+
+  show("#screen-intro");
+});
+
+// ================================
+// RENDER QUESTION
+// ================================
+function setNextLabelAndHint(){
+  const isLast = currentQ === questions.length - 1;
+  btnNext.textContent = isLast ? "Quiero ver mis resultados" : "Siguiente";
+  qHint.textContent = isLast
+    ? "Elegí una opción y luego tocá “Quiero ver mis resultados”."
+    : "Elegí una opción para habilitar “Siguiente”.";
 }
 
-/* Acciones pegadas abajo (mejor UX mobile) */
-.quiz-actions{
-  margin-top: 16px;
-  position: sticky;
-  bottom: 0;
-  padding-top: 10px;
-  background: linear-gradient(180deg, rgba(14,15,20,0) 0%, rgba(14,15,20,.92) 55%, rgba(14,15,20,.98) 100%);
-  backdrop-filter: blur(6px);
+function renderQuestion(){
+  const q = questions[currentQ];
+
+  qTitle.textContent = q.title;
+  qCount.textContent = `${currentQ + 1} de ${questions.length}`;
+
+  const quizProgress = Math.round(((currentQ + 1) / questions.length) * 100);
+  quizBar.style.width = `${quizProgress}%`;
+
+  qOptions.innerHTML = "";
+  btnPrev.disabled = currentQ === 0;
+
+  setNextLabelAndHint();
+  btnNext.disabled = !answers[currentQ];
+
+  q.options.forEach((opt) => {
+    const b = document.createElement("button");
+    b.type = "button";
+    b.className = "opt" + (answers[currentQ] === opt.key ? " selected" : "");
+    b.setAttribute("aria-pressed", answers[currentQ] === opt.key ? "true" : "false");
+    b.innerHTML = `<span class="k">${opt.key}</span>${escapeHtml(opt.text)}`;
+
+    b.addEventListener("click", () => {
+      if (locked) return;
+
+      answers[currentQ] = opt.key;
+      intensityAnswers[currentQ] = opt.music || null;
+
+      [...qOptions.children].forEach(ch => {
+        ch.classList.remove("selected");
+        ch.setAttribute("aria-pressed", "false");
+      });
+
+      b.classList.add("selected");
+      b.setAttribute("aria-pressed", "true");
+      btnNext.disabled = false;
+
+      setNextLabelAndHint();
+    });
+
+    qOptions.appendChild(b);
+  });
 }
 
-/* =========================
-   GOLD CARD
-   ========================= */
-.gold-card{
-  margin-top: 18px;
-  padding: 22px 18px;
-  border-radius: 18px;
-  border: 1px solid var(--goldLine);
-  background: linear-gradient(145deg, rgba(212,175,55,0.07), rgba(255,255,255,0.02));
-  box-shadow: 0 16px 46px rgba(0,0,0,.40);
-  animation: fadeInUp 0.55s ease forwards;
-  opacity: 0;
-}
-@keyframes fadeInUp{
-  from{ transform: translateY(14px); opacity: 0; }
-  to{ transform: translateY(0); opacity: 1; }
-}
-.gold-title{
-  font-size: 12px;
-  letter-spacing: 2px;
-  text-transform: uppercase;
-  color: rgba(212,175,55,0.95);
-  margin-bottom: 6px;
-}
-.gold-percentage{
-  font-size: 46px;
-  font-weight: 750;
-  color: var(--gold);
-  margin: 6px 0 10px;
-}
-.gold-text{
-  color: rgba(255,255,255,0.88);
-  font-size: 15px;
-  line-height: 1.7;
+// ================================
+// COMPUTE ARCHETYPE (desempate mejorado)
+// ================================
+function computeArchetype(ans){
+  const scores = {A:0, B:0, C:0, D:0, E:0};
+  ans.forEach(a => { if(a && scores[a] !== undefined) scores[a]++; });
+
+  const entries = Object.entries(scores);
+  const max = Math.max(...entries.map(([,v]) => v));
+  let tied = entries.filter(([,v]) => v === max).map(([k]) => k);
+
+  // desempate: última respuesta del empate
+  if (tied.length > 1){
+    for (let i = ans.length - 1; i >= 0; i--){
+      if (tied.includes(ans[i])) { tied = [ans[i]]; break; }
+    }
+  }
+  const primary = tied[0];
+
+  const remaining = entries.filter(([k]) => k !== primary).sort((a,b)=>b[1]-a[1]);
+  const secMax = remaining[0][1];
+  let secTied = remaining.filter(([,v]) => v === secMax).map(([k]) => k);
+
+  if (secTied.length > 1){
+    for (let i = ans.length - 1; i >= 0; i--){
+      if (secTied.includes(ans[i])) { secTied = [ans[i]]; break; }
+    }
+  }
+
+  return { scores, primary, secondary: secTied[0] };
 }
 
-/* =========================
-   MOBILE POLISH
-   ========================= */
-@media (max-width: 520px){
-  .wrap{ padding: 18px 12px 38px; }
-  #q-title{ font-size: 28px; }
-  #screen-quiz.card{ min-height: calc(100dvh - 120px); padding: 22px 16px; }
-  .card{ padding: 18px; }
-  .cta-row.split{ gap: 8px; }
-  .btn{ padding: 12px 12px; }
+// ================================
+// COMPUTE INTENSITY (desempate mejorado)
+// ================================
+function computeIntensity(intensityArr, visionMusical){
+  const m = {M1:0, M2:0, M3:0};
+  intensityArr.forEach(x => { if(x && m[x] !== undefined) m[x]++; });
+
+  if (visionMusical.includes("sencillo")) m.M1 += 1;
+  if (visionMusical.includes("elegante")) m.M2 += 1;
+  if (visionMusical.includes("impactante")) m.M3 += 1;
+  if (visionMusical.includes("asesoramiento")) m.M2 += 1;
+
+  const entries = Object.entries(m);
+  const max = Math.max(...entries.map(([,v]) => v));
+  let tied = entries.filter(([,v]) => v === max).map(([k]) => k);
+
+  // desempate: última intensidad elegida que coincida
+  if (tied.length > 1){
+    for (let i = intensityArr.length - 1; i >= 0; i--){
+      const val = intensityArr[i];
+      if (val && tied.includes(val)) { tied = [val]; break; }
+    }
+  }
+
+  return tied[0];
 }
+
+// ================================
+// PAYLOAD + SEND
+// ================================
+function buildPayload(lead, answers, intensityAnswers, computed, intensity, prioridad, points, indice){
+  return {
+    nombre: lead.nombre,
+    telefono: lead.telefono,
+    fecha_boda: lead.fecha_boda,
+    venue: lead.venue,
+    invitados: lead.invitados,
+    vision_musical: lead.vision_musical,
+
+    q1: answers[0], q2: answers[1], q3: answers[2], q4: answers[3], q5: answers[4],
+    q6: answers[5], q7: answers[6], q8: answers[7], q9: answers[8], q10: answers[9],
+
+    m1: intensityAnswers[0] || "", m2: intensityAnswers[1] || "", m3: intensityAnswers[2] || "",
+    m4: intensityAnswers[3] || "", m5: intensityAnswers[4] || "", m6: intensityAnswers[5] || "",
+    m7: intensityAnswers[6] || "", m8: intensityAnswers[7] || "", m9: intensityAnswers[8] || "",
+    m10: intensityAnswers[9] || "",
+
+    arquetipo: archetypes[computed.primary].name,
+    arquetipo_secundario: archetypes[computed.secondary].name,
+    intensidad_musical: intensity,
+
+    scoreA: computed.scores.A,
+    scoreB: computed.scores.B,
+    scoreC: computed.scores.C,
+    scoreD: computed.scores.D,
+    scoreE: computed.scores.E,
+
+    prioridad,
+    prioridad_points: points,
+    indice_diseno: indice
+  };
+}
+
+async function enviarLeadASheets(payload){
+  const res = await fetch(WEBHOOK_URL, {
+    method: "POST",
+    headers: { "Content-Type": "text/plain;charset=utf-8" },
+    body: JSON.stringify(payload),
+  });
+  return await res.text();
+}
+
+// ================================
+// SETLIST RENDER HELPERS
+// ================================
+function getSetlistTeasers_(primaryKey, intensity, max = 2){
+  const sl = setlists[primaryKey];
+  const addOn = intensityAddOns[intensity];
+
+  const picks = [];
+  if (sl?.moments?.[0]?.songs?.[0]) picks.push(sl.moments[0].songs[0]);
+
+  if (picks.length < max && addOn?.add?.[0]) picks.push(addOn.add[0]);
+  else if (picks.length < max && sl?.moments?.[1]?.songs?.[0]) picks.push(sl.moments[1].songs[0]);
+
+  return picks.slice(0, max);
+}
+
+function renderSetlistHTML_(primaryKey, intensity){
+  const sl = setlists[primaryKey];
+  const addOn = intensityAddOns[intensity];
+
+  if (!sl) return `<p class="muted">No encontramos setlist para este perfil.</p>`;
+
+  const momentsHtml = sl.moments.map(m => {
+    const items = m.songs.map(s => `<li>${escapeHtml(s)}</li>`).join("");
+    return `
+      <div class="result-box" style="margin-top:12px;">
+        <h4>${escapeHtml(m.name)}</h4>
+        <ul>${items}</ul>
+      </div>
+    `;
+  }).join("");
+
+  const addOnHtml = addOn ? `
+    <div class="gold-card" style="margin-top:14px;">
+      <div class="gold-title">${escapeHtml(addOn.title)}</div>
+      <div class="gold-text">${escapeHtml(addOn.note)}</div>
+      <hr/>
+      <h4 style="margin:0 0 8px;">+3 temas sugeridos para tu intensidad</h4>
+      <ul>${addOn.add.map(x => `<li>${escapeHtml(x)}</li>`).join("")}</ul>
+    </div>
+  ` : "";
+
+  return `
+    <p class="muted">${escapeHtml(sl.title)}</p>
+    ${momentsHtml}
+    ${addOnHtml}
+    <p class="fineprint">*El setlist es una guía. Se ajusta a timing real, iglesia/venue y canciones significativas de la pareja.</p>
+  `;
+}
+
+// ================================
+// RESULT RENDER
+// ================================
+function renderResult(computed, intensity, prioridad, indice){
+  const a1 = archetypes[computed.primary];
+  const a2 = archetypes[computed.secondary];
+  const m = musicModules[intensity];
+
+  const teasers = getSetlistTeasers_(computed.primary, intensity, 2);
+
+  resultTitle.textContent = `Resultado: ${a1.name}`;
+  resultSubtitle.textContent = `Intensidad musical: ${m.name} · Prioridad interna: ${prioridad}`;
+
+  resultBrief.innerHTML = `
+    <h3>${escapeHtml(a1.tagline)}</h3>
+    <p>${escapeHtml(a1.brief)}</p>
+    <hr/>
+    <h3>🎻 Estilo musical: ${escapeHtml(m.name)}</h3>
+    <p>${escapeHtml(m.brief)}</p>
+    <hr/>
+    <h3>🎵 Teaser de setlist (ideal para ustedes)</h3>
+    <ul>
+      ${teasers.map(t => `<li>${escapeHtml(t)}</li>`).join("")}
+    </ul>
+    <p class="muted" style="margin-top:10px;">En el análisis completo está el setlist por momentos (ceremonia, cóctel y wow).</p>
+  `;
+
+  const gold = `
+    <div class="gold-card">
+      <div class="gold-title">Índice de Diseño Emocional</div>
+      <div class="gold-percentage">${indice}%</div>
+      <div class="gold-text">
+        Su perfil muestra una fuerte orientación hacia experiencias musicales diseñadas con intención.
+        <br><br>
+        Las parejas con este nivel de afinidad suelen planificar con anticipación para garantizar coherencia estética y disponibilidad.
+        <br><br>
+        <strong>Recomendamos agendar con tiempo.</strong>
+      </div>
+    </div>
+  `;
+
+  resultDetails.innerHTML = `
+    <h3>🔎 Lo que esto dice sobre ustedes</h3>
+    <p>${escapeHtml(a1.full)}</p>
+
+    <hr/>
+
+    <h3>✨ Matiz secundario</h3>
+    <p><strong>${escapeHtml(a2.name)}</strong> — ${escapeHtml(a2.tagline)}</p>
+
+    <hr/>
+
+    <h3>🎶 Cómo debería vivirse su música</h3>
+    <p>${escapeHtml(m.full)}</p>
+
+    ${gold}
+
+    <hr/>
+
+    <h3>💎 Perfil de inversión</h3>
+    <p>${escapeHtml(investmentBlock(intensity))}</p>
+
+    <hr/>
+
+    <h3>🎼 Set recomendado (formato)</h3>
+    <ul>${a1.set.map(x => `<li>${escapeHtml(x)}</li>`).join("")}</ul>
+
+    <hr/>
+
+    <h3>🎵 Setlist sugerido (canciones ideales)</h3>
+    ${renderSetlistHTML_(computed.primary, intensity)}
+  `;
+
+  // por UX: oculto por defecto
+  resultDetails.hidden = true;
+  resultDetails.classList.add("hidden");
+  btnToggleDetails.textContent = "Ver análisis completo";
+
+  const text = `Hola Ceci! Hicimos el test y nos salió: ${a1.name} (secundario: ${a2.name}). Intensidad: ${m.name}. Prioridad interna: ${prioridad}. Queremos una propuesta personalizada 🙌`;
+  btnWA.setAttribute("href", `${WHATSAPP_BASE}?text=${encodeURIComponent(text)}`);
+}
+
+// ================================
+// INIT
+// ================================
+show("#screen-intro");
+console.log("✅ Test premium cargado OK");
 
