@@ -457,5 +457,29 @@ hr{
   .cta-row.split{ gap: 8px; }
   .btn{ padding: 12px 12px; }
 }
+/* =========================
+   FORCE GOLD SELECT (override)
+   Pegá esto AL FINAL del style.css
+   ========================= */
+
+.opt.selected{
+  background: linear-gradient(
+    135deg,
+    rgba(212,175,55,.14),
+    rgba(243,210,122,.06)
+  ) !important;
+  border-color: rgba(212,175,55,.75) !important;
+  box-shadow:
+    0 0 0 1px rgba(212,175,55,.20) inset,
+    0 10px 26px rgba(0,0,0,.32),
+    0 0 28px rgba(212,175,55,.16) !important;
+}
+
+.opt.selected .k{
+  background: linear-gradient(135deg, var(--gold), var(--gold2)) !important;
+  border: none !important;
+  color: #111 !important;
+  box-shadow: 0 8px 18px rgba(212,175,55,.28) !important;
+}
 
 
