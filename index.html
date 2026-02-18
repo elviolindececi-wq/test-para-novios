@@ -103,14 +103,14 @@
     </section>
 
     <!-- SCREEN: QUESTIONS -->
-    <section class="card screen hidden" id="screen-quiz">
+    <section class="card screen hidden" id="screen-quiz" aria-live="polite">
       <div class="progress">
         <div class="bar" id="quiz-bar" style="width: 30%"></div>
       </div>
 
       <div class="quiz-head">
         <h2 id="q-title">Pregunta</h2>
-        <p class="muted" id="q-count">1 de 8</p>
+        <p class="muted" id="q-count">1 de 10</p>
       </div>
 
       <div id="q-options" class="options"></div>
@@ -130,7 +130,15 @@
       <h2 id="result-title">Tu resultado</h2>
       <p class="muted" id="result-subtitle"></p>
 
-      <div class="result-box" id="result-content"></div>
+      <!-- Breve (impacto) -->
+      <div class="result-box" id="result-brief"></div>
+
+      <div class="cta-row">
+        <button class="btn ghost" id="btn-toggle-details">Ver análisis completo</button>
+      </div>
+
+      <!-- Completo (expandible) -->
+      <div class="result-box hidden" id="result-details"></div>
 
       <div class="cta-row split stack">
         <button class="btn ghost" id="btn-retry">Volver a hacer el test</button>
@@ -152,3 +160,4 @@
   <script src="app.js"></script>
 </body>
 </html>
+
