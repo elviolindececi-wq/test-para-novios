@@ -9,14 +9,14 @@
 <body>
   <main class="wrap">
     <header class="brand">
-      <div class="logo">🎻</div>
+      <div class="logo" aria-hidden="true">🎻</div>
       <div>
         <h1>El Violín de Ceci</h1>
         <p class="subtitle">Test Premium para Novios</p>
       </div>
     </header>
 
-    <!-- SCREEN: INTRO (visible por defecto) -->
+    <!-- SCREEN: INTRO -->
     <section class="card screen" id="screen-intro">
       <h2>Tu boda no es un evento.<br/>Es una experiencia emocional irrepetible.</h2>
       <p>
@@ -24,27 +24,43 @@
         <strong>set musical ideal</strong> para convertirla en un momento inolvidable.
       </p>
       <div class="cta-row">
-        <button class="btn primary" id="btn-start">Comenzar</button>
+        <button class="btn primary" id="btn-start" type="button">Comenzar</button>
       </div>
       <p class="fineprint">Al finalizar recibirán un resultado personalizado.</p>
     </section>
 
-    <!-- SCREEN: LEAD FORM (oculto por defecto) -->
-    <section class="card screen hidden" id="screen-lead" hidden>
-      <div class="progress">
-        <div class="bar" style="width: 20%"></div>
+    <!-- SCREEN: LEAD FORM -->
+    <section class="card screen" id="screen-lead" hidden>
+      <div class="progress" aria-label="Progreso">
+        <div class="bar" id="lead-bar" style="width: 20%"></div>
       </div>
+
       <h2>Antes de comenzar, contanos un poco sobre ustedes</h2>
 
-      <form id="lead-form" class="form">
+      <form id="lead-form" class="form" novalidate>
         <div class="field">
           <label for="nombre">Nombre y apellido <span class="req">*</span></label>
-          <input id="nombre" name="nombre" type="text" placeholder="Ej: Ceci Lezcano" required />
+          <input
+            id="nombre"
+            name="nombre"
+            type="text"
+            placeholder="Ej: Ceci Lezcano"
+            autocomplete="name"
+            required
+          />
         </div>
 
         <div class="field">
           <label for="telefono">Teléfono <span class="req">*</span></label>
-          <input id="telefono" name="telefono" type="tel" placeholder="Ej: 0985 123 456" required />
+          <input
+            id="telefono"
+            name="telefono"
+            type="tel"
+            placeholder="Ej: 0985 123 456"
+            autocomplete="tel"
+            inputmode="tel"
+            required
+          />
           <small>Solo lo utilizamos para enviar información personalizada sobre su experiencia musical.</small>
         </div>
 
@@ -67,8 +83,8 @@
           </select>
         </div>
 
-        <div class="field hidden" id="venue-otro-field">
-          <label for="venue_otro">Especificar venue</label>
+        <div class="field" id="venue-otro-field" hidden>
+          <label for="venue_otro">Especificar venue <span class="req">*</span></label>
           <input id="venue_otro" name="venue_otro" type="text" placeholder="Ej: Casa familiar, chacra, etc." />
         </div>
 
@@ -95,17 +111,17 @@
         </div>
 
         <div class="cta-row">
-          <button class="btn primary" type="submit">Descubrir nuestro estilo</button>
+          <button class="btn primary" type="submit">Empezar el test</button>
         </div>
 
         <p class="fineprint"><span class="req">*</span> Campos obligatorios.</p>
       </form>
     </section>
 
-    <!-- SCREEN: QUESTIONS (oculto por defecto) -->
-    <section class="card screen hidden" id="screen-quiz" aria-live="polite" hidden>
-      <div class="progress">
-        <div class="bar" id="quiz-bar" style="width: 30%"></div>
+    <!-- SCREEN: QUIZ -->
+    <section class="card screen" id="screen-quiz" aria-live="polite" hidden>
+      <div class="progress" aria-label="Progreso del test">
+        <div class="bar" id="quiz-bar" style="width: 0%"></div>
       </div>
 
       <div class="quiz-head">
@@ -113,35 +129,37 @@
         <p class="muted" id="q-count">1 de 10</p>
       </div>
 
-      <div id="q-options" class="options"></div>
+      <div class="muted hint" id="q-hint">Elegí una opción para habilitar “Siguiente”.</div>
 
-      <div class="cta-row split">
-        <button class="btn ghost" id="btn-prev" disabled>Volver</button>
-        <button class="btn primary" id="btn-next" disabled>Siguiente</button>
+      <div id="q-options" class="options" role="group" aria-label="Opciones"></div>
+
+      <div class="quiz-actions">
+        <div class="cta-row split">
+          <button class="btn ghost" id="btn-prev" type="button" disabled>Volver</button>
+          <button class="btn primary" id="btn-next" type="button" disabled>Siguiente</button>
+        </div>
       </div>
     </section>
 
-    <!-- SCREEN: RESULT (oculto por defecto) -->
-    <section class="card screen hidden" id="screen-result" hidden>
-      <div class="progress">
+    <!-- SCREEN: RESULT -->
+    <section class="card screen" id="screen-result" hidden>
+      <div class="progress" aria-label="Progreso final">
         <div class="bar" style="width: 100%"></div>
       </div>
 
       <h2 id="result-title">Tu resultado</h2>
       <p class="muted" id="result-subtitle"></p>
 
-      <!-- Breve (impacto) -->
       <div class="result-box" id="result-brief"></div>
 
       <div class="cta-row">
-        <button class="btn ghost" id="btn-toggle-details">Ver análisis completo</button>
+        <button class="btn ghost" id="btn-toggle-details" type="button">Ver análisis completo</button>
       </div>
 
-      <!-- Completo (expandible) -->
-      <div class="result-box hidden" id="result-details"></div>
+      <div class="result-box" id="result-details" hidden></div>
 
       <div class="cta-row split stack">
-        <button class="btn ghost" id="btn-retry">Volver a hacer el test</button>
+        <button class="btn ghost" id="btn-retry" type="button">Volver a hacer el test</button>
         <a class="btn primary" id="btn-wa" href="https://wa.me/595985689454" target="_blank" rel="noopener">
           Contactar por WhatsApp con Ceci
         </a>
@@ -157,8 +175,8 @@
     </footer>
   </main>
 
-  <!-- ✅ defer evita problemas de carga en mobile -->
   <script src="app.js" defer></script>
 </body>
 </html>
+
 
