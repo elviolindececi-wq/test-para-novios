@@ -4,6 +4,10 @@
 const WEBHOOK_URL = "https://script.google.com/macros/s/AKfycbyq6c75P3nxAqX1WEj47zR468SyBmyrdKdQJiStmcVvS8SZYpkMkpqmHnd7lCyIYLO2kg/exec";
 const WHATSAPP_BASE = "https://wa.me/595985689454";
 
+// UX: Auto-advance (como el ejemplo)
+const AUTO_ADVANCE = true;      // ✅ true = avanza solo al elegir opción
+const AUTO_DELAY_MS = 220;      // ✅ delay para que se note el dorado (premium)
+
 const $ = (sel) => document.querySelector(sel);
 
 function show(id){
@@ -243,6 +247,7 @@ let currentQ = 0;
 let answers = Array(questions.length).fill(null);
 let intensityAnswers = Array(questions.length).fill(null);
 let sending = false;
+let advancing = false; // ✅ evita dobles avances
 
 // ================================
 // ELEMENTS
@@ -305,20 +310,56 @@ leadForm.addEventListener("submit", (e) => {
   currentQ = 0;
   answers = Array(questions.length).fill(null);
   intensityAnswers = Array(questions.length).fill(null);
+  advancing = false;
 
   renderQuestion();
   show("#screen-quiz");
 });
 
 btnPrev.addEventListener("click", () => {
+  if (advancing) return;
   if (currentQ <= 0) return;
   currentQ--;
   renderQuestion();
 });
 
 btnNext.addEventListener("click", async () => {
+  if (advancing) return;
   if (!answers[currentQ]) return;
+  await goNextOrFinish();
+});
 
+btnToggleDetails.addEventListener("click", () => {
+  const isHidden = resultDetails.classList.contains("hidden");
+  if (isHidden){
+    resultDetails.classList.remove("hidden");
+    btnToggleDetails.textContent = "Ocultar análisis completo";
+  }else{
+    resultDetails.classList.add("hidden");
+    btnToggleDetails.textContent = "Ver análisis completo";
+  }
+});
+
+btnRetry.addEventListener("click", () => {
+  lead = {};
+  currentQ = 0;
+  answers = Array(questions.length).fill(null);
+  intensityAnswers = Array(questions.length).fill(null);
+  sending = false;
+  advancing = false;
+
+  leadForm.reset();
+  venueOtroField.classList.add("hidden");
+  resultDetails.classList.add("hidden");
+  btnToggleDetails.textContent = "Ver análisis completo";
+  show("#screen-intro");
+});
+
+// ================================
+// NAV: NEXT OR FINISH
+// ================================
+async function goNextOrFinish(){
+  // Si no es la última, avanzar
   if (currentQ < questions.length - 1){
     currentQ++;
     renderQuestion();
@@ -346,33 +387,10 @@ btnNext.addEventListener("click", async () => {
       sending = false;
     }
   }
-});
-
-btnToggleDetails.addEventListener("click", () => {
-  const isHidden = resultDetails.classList.contains("hidden");
-  if (isHidden){
-    resultDetails.classList.remove("hidden");
-    btnToggleDetails.textContent = "Ocultar análisis completo";
-  }else{
-    resultDetails.classList.add("hidden");
-    btnToggleDetails.textContent = "Ver análisis completo";
-  }
-});
-
-btnRetry.addEventListener("click", () => {
-  lead = {};
-  currentQ = 0;
-  answers = Array(questions.length).fill(null);
-  intensityAnswers = Array(questions.length).fill(null);
-  leadForm.reset();
-  venueOtroField.classList.add("hidden");
-  resultDetails.classList.add("hidden");
-  btnToggleDetails.textContent = "Ver análisis completo";
-  show("#screen-intro");
-});
+}
 
 // ================================
-// RENDER QUESTION
+// RENDER QUESTION (AUTO-ADVANCE)
 // ================================
 function renderQuestion(){
   const q = questions[currentQ];
@@ -383,23 +401,46 @@ function renderQuestion(){
   const quizProgress = 20 + ((currentQ + 1) / questions.length) * 80;
   quizBar.style.width = `${Math.round(quizProgress)}%`;
 
+  // reset UI state
   qOptions.innerHTML = "";
   btnPrev.disabled = currentQ === 0;
   btnNext.disabled = !answers[currentQ];
   btnNext.textContent = currentQ === questions.length - 1 ? "Ver mi resultado" : "Siguiente";
+  advancing = false;
+
+  // animación suave si la usás en CSS
+  qOptions.classList.remove("fade-in");
+  void qOptions.offsetWidth;
+  qOptions.classList.add("fade-in");
 
   q.options.forEach((opt) => {
     const div = document.createElement("div");
     div.className = "opt" + (answers[currentQ] === opt.key ? " selected" : "");
     div.innerHTML = `<span class="k">${opt.key}</span>${escapeHtml(opt.text)}`;
 
-    div.addEventListener("click", () => {
+    div.addEventListener("click", async () => {
+      if (advancing) return;
+
+      // 1) Guardar respuesta
       answers[currentQ] = opt.key;
       intensityAnswers[currentQ] = opt.music || null;
 
+      // 2) UI: marcar selección
       [...qOptions.children].forEach(ch => ch.classList.remove("selected"));
       div.classList.add("selected");
+
+      // 3) Habilitar botón (fallback)
       btnNext.disabled = false;
+
+      // 4) Auto-advance (como el ejemplo)
+      if (AUTO_ADVANCE){
+        advancing = true;
+        btnNext.disabled = true; // evita doble avance
+        setTimeout(async () => {
+          await goNextOrFinish();
+          advancing = false;
+        }, AUTO_DELAY_MS);
+      }
     });
 
     qOptions.appendChild(div);
@@ -543,4 +584,4 @@ function renderResult(computed, intensity, prioridad, indice){
 // INIT
 // ================================
 show("#screen-intro");
-console.log("✅ app.js final cargado");
+console.log("✅ app.js final cargado (auto-advance ON)");
