@@ -16,7 +16,7 @@
       </div>
     </header>
 
-    <!-- SCREEN: INTRO -->
+    <!-- INTRO -->
     <section class="card screen" id="screen-intro">
       <h2>Tu boda no es un evento.<br/>Es una experiencia emocional irrepetible.</h2>
       <p>
@@ -29,81 +29,7 @@
       <p class="fineprint">Al finalizar recibirán un resultado personalizado.</p>
     </section>
 
-    <!-- SCREEN: LEAD FORM -->
-    <section class="card screen hidden" id="screen-lead" hidden>
-      <div class="progress" aria-label="Progreso">
-        <div class="bar" style="width: 20%"></div>
-      </div>
-
-      <h2>Antes de comenzar, contanos un poco sobre ustedes</h2>
-
-      <form id="lead-form" class="form" novalidate>
-        <div class="field">
-          <label for="nombre">Nombre y apellido <span class="req">*</span></label>
-          <input id="nombre" name="nombre" type="text" placeholder="Ej: Ceci Lezcano" autocomplete="name" required />
-        </div>
-
-        <div class="field">
-          <label for="telefono">Teléfono <span class="req">*</span></label>
-          <input id="telefono" name="telefono" type="tel" placeholder="Ej: 0985 123 456" autocomplete="tel" inputmode="tel" required />
-          <small>Solo lo utilizamos para enviar información personalizada sobre su experiencia musical.</small>
-        </div>
-
-        <div class="field">
-          <label for="fecha_boda">Fecha de la boda <span class="req">*</span></label>
-          <input id="fecha_boda" name="fecha_boda" type="date" required />
-        </div>
-
-        <div class="field">
-          <label for="venue">¿Dónde será su boda? <span class="req">*</span></label>
-          <select id="venue" name="venue" required>
-            <option value="" selected disabled>Elegí una opción</option>
-            <option>Salón tradicional</option>
-            <option>Quinta o estancia</option>
-            <option>Hotel</option>
-            <option>Iglesia + salón</option>
-            <option>Playa / destino</option>
-            <option>Aún no lo definimos</option>
-            <option>Otro</option>
-          </select>
-        </div>
-
-        <div class="field hidden" id="venue-otro-field" hidden>
-          <label for="venue_otro">Especificar venue <span class="req">*</span></label>
-          <input id="venue_otro" name="venue_otro" type="text" placeholder="Ej: Casa familiar, chacra, etc." />
-        </div>
-
-        <div class="field">
-          <label for="invitados">Cantidad aproximada de invitados <span class="req">*</span></label>
-          <select id="invitados" name="invitados" required>
-            <option value="" selected disabled>Elegí una opción</option>
-            <option>Menos de 80</option>
-            <option>80 – 150</option>
-            <option>150 – 250</option>
-            <option>Más de 250</option>
-          </select>
-        </div>
-
-        <div class="field">
-          <label for="vision_musical">¿Cómo imaginan la experiencia musical? <span class="req">*</span></label>
-          <select id="vision_musical" name="vision_musical" required>
-            <option value="" selected disabled>Elegí una opción</option>
-            <option>Algo sencillo y emotivo para acompañar el momento</option>
-            <option>Algo elegante y bien producido</option>
-            <option>Algo impactante y memorable</option>
-            <option>Queremos asesoramiento profesional para definirlo</option>
-          </select>
-        </div>
-
-        <div class="cta-row">
-          <button class="btn primary" type="submit">Empezar el test</button>
-        </div>
-
-        <p class="fineprint"><span class="req">*</span> Campos obligatorios.</p>
-      </form>
-    </section>
-
-    <!-- SCREEN: QUIZ -->
+    <!-- QUIZ -->
     <section class="card screen hidden" id="screen-quiz" aria-live="polite" hidden>
       <div class="progress" aria-label="Progreso del test">
         <div class="bar" id="quiz-bar" style="width: 0%"></div>
@@ -124,7 +50,42 @@
       </div>
     </section>
 
-    <!-- SCREEN: RESULT -->
+    <!-- FORM FINAL (APARECE AL FINAL) -->
+    <section class="card screen hidden" id="screen-lead" hidden>
+      <div class="progress" aria-label="Paso final">
+        <div class="bar" id="lead-bar" style="width: 92%"></div>
+      </div>
+
+      <h2>Último paso para ver sus resultados</h2>
+      <p class="muted">Completá estos datos y te mostramos el resultado personalizado.</p>
+
+      <form id="lead-form" class="form" novalidate>
+        <div class="field">
+          <label for="nombre">Nombre y apellido <span class="req">*</span></label>
+          <input id="nombre" name="nombre" type="text" placeholder="Ej: Ceci Lezcano" autocomplete="name" required />
+        </div>
+
+        <div class="field">
+          <label for="telefono">Teléfono <span class="req">*</span></label>
+          <input id="telefono" name="telefono" type="tel" placeholder="Ej: 0985 123 456" autocomplete="tel" inputmode="tel" required />
+          <small>Solo lo utilizamos para enviar información personalizada sobre su experiencia musical.</small>
+        </div>
+
+        <div class="field">
+          <label for="fecha_boda">Fecha de la boda <span class="req">*</span></label>
+          <input id="fecha_boda" name="fecha_boda" type="date" required />
+        </div>
+
+        <div class="cta-row split stack">
+          <button class="btn ghost" id="btn-back-to-quiz" type="button">Volver al test</button>
+          <button class="btn primary" id="btn-show-results" type="submit">Ver mis resultados</button>
+        </div>
+
+        <p class="fineprint"><span class="req">*</span> Campos obligatorios.</p>
+      </form>
+    </section>
+
+    <!-- RESULT -->
     <section class="card screen hidden" id="screen-result" hidden>
       <div class="progress" aria-label="Progreso final">
         <div class="bar" style="width: 100%"></div>
@@ -143,6 +104,13 @@
 
       <div class="cta-row split stack">
         <button class="btn ghost" id="btn-retry" type="button">Volver a hacer el test</button>
+
+        <a class="btn ghost" id="btn-ig"
+           href="https://www.instagram.com/elviolindececi/"
+           target="_blank" rel="noopener">
+          Seguir en Instagram
+        </a>
+
         <a class="btn primary" id="btn-wa" href="https://wa.me/595985689454" target="_blank" rel="noopener">
           Contactar por WhatsApp con Ceci
         </a>
@@ -161,6 +129,4 @@
   <script src="app.js" defer></script>
 </body>
 </html>
-
-
 
