@@ -10,16 +10,11 @@
   --shadow: 0 16px 50px rgba(0,0,0,.45);
   --radius:18px;
 
-  /* Gold (premium) */
   --gold:#d4af37;
   --gold2:#f3d27a;
   --gold3:#b8922c;
   --goldLine: rgba(212,175,55,.45);
 
-  /* Surfaces */
-  --surface: rgba(255,255,255,.035);
-
-  /* Focus */
   --focus: rgba(255,255,255,.32);
 }
 
@@ -45,13 +40,11 @@ body{
   padding: 26px 16px 44px;
 }
 
-/* Safety: soporta hidden atributo + clase */
+/* A prueba de balas */
 [hidden]{ display:none !important; }
 .hidden{ display:none !important; }
 
-/* =========================
-   BRAND
-   ========================= */
+/* BRAND */
 .brand{
   display:flex;
   gap:14px;
@@ -77,9 +70,7 @@ body{
   font-size: 13px;
 }
 
-/* =========================
-   CARDS + SCREENS
-   ========================= */
+/* CARDS */
 .card{
   background: linear-gradient(180deg, rgba(255,255,255,.055) 0%, rgba(255,255,255,.03) 100%);
   border: 1px solid rgba(255,255,255,.10);
@@ -134,9 +125,7 @@ p{ color: var(--txt); line-height: 1.62; margin: 0 0 10px; }
   color: var(--muted);
 }
 
-/* =========================
-   PROGRESS (GOLD)
-   ========================= */
+/* PROGRESS */
 .progress{
   width:100%;
   height:10px;
@@ -146,7 +135,6 @@ p{ color: var(--txt); line-height: 1.62; margin: 0 0 10px; }
   margin-bottom: 14px;
   border: 1px solid rgba(255,255,255,.10);
 }
-
 .bar{
   height:100%;
   width: 0%;
@@ -158,7 +146,6 @@ p{ color: var(--txt); line-height: 1.62; margin: 0 0 10px; }
   position: relative;
   overflow: hidden;
 }
-
 .bar::after{
   content:"";
   position:absolute;
@@ -174,9 +161,7 @@ p{ color: var(--txt); line-height: 1.62; margin: 0 0 10px; }
   100%{ left:120%; }
 }
 
-/* =========================
-   FORM
-   ========================= */
+/* FORM */
 .form{
   display:grid;
   gap: 14px;
@@ -196,7 +181,7 @@ p{ color: var(--txt); line-height: 1.62; margin: 0 0 10px; }
   background: rgba(0,0,0,.22);
   color: var(--txt);
   outline:none;
-  transition: border-color .15s ease, box-shadow .15s ease, transform .06s ease;
+  transition: border-color .15s ease, box-shadow .15s ease;
 }
 .field input:focus, .field select:focus{
   border-color: var(--focus);
@@ -208,12 +193,9 @@ p{ color: var(--txt); line-height: 1.62; margin: 0 0 10px; }
   margin-top: 6px;
   font-size: 12px;
 }
-
 .req{ color: rgba(255,255,255,.85); }
 
-/* =========================
-   BUTTONS
-   ========================= */
+/* BUTTONS */
 .cta-row{
   display:flex;
   gap: 10px;
@@ -240,14 +222,9 @@ p{ color: var(--txt); line-height: 1.62; margin: 0 0 10px; }
   border-color: rgba(255,255,255,.18);
   transform: translateY(-1px);
 }
-.btn:active{
-  transform: translateY(0px) scale(.995);
-}
-.btn:disabled{
-  opacity:.45;
-  cursor:not-allowed;
-  transform:none;
-}
+.btn:active{ transform: translateY(0px) scale(.995); }
+.btn:disabled{ opacity:.45; cursor:not-allowed; transform:none; }
+
 .primary{
   background: rgba(255,255,255,.92);
   color: #0e0f14;
@@ -266,9 +243,7 @@ p{ color: var(--txt); line-height: 1.62; margin: 0 0 10px; }
   border-color: rgba(255,255,255,.25);
 }
 
-/* =========================
-   RESULT BOX
-   ========================= */
+/* RESULT BOX */
 .result-box{
   margin-top: 14px;
   border: 1px solid rgba(255,255,255,.10);
@@ -276,16 +251,8 @@ p{ color: var(--txt); line-height: 1.62; margin: 0 0 10px; }
   border-radius: 16px;
   padding: 16px;
 }
-.result-box h3{
-  margin: 0 0 8px;
-  font-size: 18px;
-  letter-spacing: -0.15px;
-}
-.result-box h4{
-  margin: 12px 0 6px;
-  font-size: 15px;
-  color: rgba(255,255,255,.92);
-}
+.result-box h3{ margin: 0 0 8px; font-size: 18px; letter-spacing: -0.15px; }
+.result-box h4{ margin: 12px 0 6px; font-size: 15px; color: rgba(255,255,255,.92); }
 .result-box ul{ margin: 8px 0 0 18px; }
 .result-box li{ margin: 6px 0; color: var(--txt); }
 
@@ -302,9 +269,7 @@ hr{
   text-align:center;
 }
 
-/* =========================
-   QUIZ: FULL-SCREEN EDITORIAL
-   ========================= */
+/* QUIZ */
 #screen-quiz.card{
   padding: 28px 22px;
   min-height: calc(100dvh - 140px);
@@ -312,35 +277,29 @@ hr{
   flex-direction: column;
   justify-content: space-between;
 }
-
 .quiz-head{
   display:flex;
   justify-content: space-between;
   align-items:flex-start;
   gap: 10px;
 }
-
 #q-title{
   font-size: 34px;
   line-height: 1.12;
   letter-spacing: -0.25px;
   margin: 6px 0 10px;
 }
-
 #q-count{
   font-size: 12px;
   letter-spacing: 1.4px;
   text-transform: uppercase;
   opacity: .85;
 }
-
 .options{
   margin-top: 18px;
   display:grid;
   gap: 12px;
 }
-
-/* opciones como button */
 .opt{
   width: 100%;
   text-align:left;
@@ -371,13 +330,6 @@ hr{
   border-color: rgba(255,255,255,.18);
   transform: translateY(-1px);
 }
-.opt:focus-visible{
-  outline:none;
-  box-shadow: 0 0 0 4px rgba(255,255,255,.10);
-  border-color: rgba(255,255,255,.25);
-}
-
-/* selected premium */
 .opt.selected{
   background: linear-gradient(135deg, rgba(212,175,55,.14), rgba(243,210,122,.06));
   border-color: rgba(212,175,55,.75);
@@ -393,13 +345,7 @@ hr{
   box-shadow: 0 8px 18px rgba(212,175,55,.28);
 }
 
-.quiz-actions{
-  margin-top: 14px;
-}
-
-/* =========================
-   GOLD CARD
-   ========================= */
+/* GOLD CARD */
 .gold-card{
   margin-top: 18px;
   padding: 22px 18px;
@@ -433,9 +379,7 @@ hr{
   line-height: 1.7;
 }
 
-/* =========================
-   MOBILE POLISH
-   ========================= */
+/* MOBILE */
 @media (max-width: 520px){
   .wrap{ padding: 18px 12px 38px; }
   #q-title{ font-size: 28px; }
@@ -444,5 +388,3 @@ hr{
   .cta-row.split{ gap: 8px; }
   .btn{ padding: 12px 12px; }
 }
-
-
