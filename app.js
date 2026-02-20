@@ -1,9 +1,8 @@
 // ================================
 // EL VIOLÍN DE CECI — TEST PREMIUM (FINAL)
-// ✅ Fix hidden + .hidden (para que NUNCA se trabe)
-// ✅ Resultado SOLO al hacer clic en "Quiero ver mis resultados"
-// ✅ Opciones accesibles (button)
-// ✅ Envío a Apps Script + WhatsApp (NO tocado)
+// ✅ Formulario SOLO al final (Nombre, Teléfono, Fecha)
+// ✅ Resultado SOLO después de completar el form final
+// ✅ WhatsApp + Apps Script intactos
 // ================================
 
 const WEBHOOK_URL = "https://script.google.com/macros/s/AKfycbyq6c75P3nxAqX1WEj47zR468SyBmyrdKdQJiStmcVvS8SZYpkMkpqmHnd7lCyIYLO2kg/exec";
@@ -144,7 +143,7 @@ const questions = [
 ];
 
 // ================================
-// ARCHETYPES
+// ARCHETYPES + MODULES
 // ================================
 const archetypes = {
   A: {
@@ -211,7 +210,7 @@ const musicModules = {
 };
 
 // ================================
-// SETLISTS (por arquetipo)
+// SETLISTS
 // ================================
 const setlists = {
   A: {
@@ -317,7 +316,6 @@ const setlists = {
   }
 };
 
-// Ajustes por intensidad (M1/M2/M3)
 const intensityAddOns = {
   M1: {
     title: "Ajuste por intensidad (M1 — Acompañamiento sutil)",
@@ -337,7 +335,7 @@ const intensityAddOns = {
 };
 
 // ================================
-// PRIORITY + INDEX
+// PRIORIDAD + ÍNDICE (con datos disponibles: fecha + intensidad)
 // ================================
 function daysUntil(dateStr){
   if(!dateStr) return null;
@@ -354,16 +352,6 @@ function computePriority(lead, intensity){
   if (intensity === "M2") points += 2;
   if (intensity === "M3") points += 3;
 
-  if (lead.invitados === "80 – 150") points += 1;
-  if (lead.invitados === "150 – 250") points += 2;
-  if (lead.invitados === "Más de 250") points += 3;
-
-  const v = (lead.venue || "").toLowerCase();
-  if (v.includes("salón") || v.includes("salon")) points += 1;
-  if (v.includes("quinta") || v.includes("estancia")) points += 2;
-  if (v.includes("hotel")) points += 2;
-  if (v.includes("playa") || v.includes("destino")) points += 2;
-
   const days = daysUntil(lead.fecha_boda);
   if (days !== null){
     if (days <= 90) points += 3;
@@ -372,8 +360,8 @@ function computePriority(lead, intensity){
   }
 
   let prioridad = "C";
-  if (points >= 8) prioridad = "A";
-  else if (points >= 5) prioridad = "B";
+  if (points >= 5) prioridad = "A";
+  else if (points >= 3) prioridad = "B";
 
   return { prioridad, points };
 }
@@ -404,10 +392,6 @@ let locked = false;
 // ELEMENTS
 // ================================
 const btnStart = $("#btn-start");
-const leadForm = $("#lead-form");
-const venueSel = $("#venue");
-const venueOtroField = $("#venue-otro-field");
-const venueOtroInput = $("#venue_otro");
 
 const quizBar = $("#quiz-bar");
 const qTitle = $("#q-title");
@@ -416,6 +400,9 @@ const qHint = $("#q-hint");
 const qOptions = $("#q-options");
 const btnPrev = $("#btn-prev");
 const btnNext = $("#btn-next");
+
+const leadForm = $("#lead-form");
+const btnBackToQuiz = $("#btn-back-to-quiz");
 
 const resultTitle = $("#result-title");
 const resultSubtitle = $("#result-subtitle");
@@ -428,56 +415,11 @@ const btnWA = $("#btn-wa");
 // ================================
 // EVENTS
 // ================================
-btnStart?.addEventListener("click", () => show("#screen-lead"));
-
-venueSel?.addEventListener("change", () => {
-  const isOtro = venueSel.value === "Otro";
-
-  // robusto: hidden + clase
-  venueOtroField.hidden = !isOtro;
-  venueOtroField.classList.toggle("hidden", !isOtro);
-
-  if (venueOtroInput){
-    venueOtroInput.required = isOtro;
-    if (!isOtro) venueOtroInput.value = "";
-    if (isOtro) venueOtroInput.focus();
-  }
-});
-
-leadForm?.addEventListener("submit", (e) => {
-  e.preventDefault();
-
-  const nombre = $("#nombre")?.value?.trim() || "";
-  const telefono = $("#telefono")?.value?.trim() || "";
-  const fecha_boda = $("#fecha_boda")?.value || "";
-  const venue = $("#venue")?.value || "";
-  const venue_otro = (venueOtroInput?.value || "").trim();
-  const invitados = $("#invitados")?.value || "";
-  const vision_musical = $("#vision_musical")?.value || "";
-
-  if(!nombre || !telefono || !fecha_boda || !venue || !invitados || !vision_musical){
-    alert("Por favor completá todos los campos obligatorios.");
-    return;
-  }
-  if (venue === "Otro" && !venue_otro){
-    alert("Por favor especificá el venue.");
-    return;
-  }
-
-  lead = {
-    nombre,
-    telefono,
-    fecha_boda,
-    venue: venue === "Otro" ? (venue_otro || "Otro") : venue,
-    invitados,
-    vision_musical
-  };
-
+btnStart?.addEventListener("click", () => {
+  lead = {};
   currentQ = 0;
   answers = Array(questions.length).fill(null);
   intensityAnswers = Array(questions.length).fill(null);
-  locked = false;
-
   renderQuestion();
   show("#screen-quiz");
 });
@@ -489,7 +431,7 @@ btnPrev?.addEventListener("click", () => {
   renderQuestion();
 });
 
-btnNext?.addEventListener("click", async () => {
+btnNext?.addEventListener("click", () => {
   if (locked) return;
   if (!answers[currentQ]) return;
 
@@ -501,11 +443,30 @@ btnNext?.addEventListener("click", async () => {
     return;
   }
 
-  // ✅ SOLO ACÁ se muestran resultados
+  // Al final: mostrar formulario (no resultados)
+  show("#screen-lead");
+});
+
+btnBackToQuiz?.addEventListener("click", () => show("#screen-quiz"));
+
+leadForm?.addEventListener("submit", async (e) => {
+  e.preventDefault();
+
+  const nombre = $("#nombre")?.value?.trim() || "";
+  const telefono = $("#telefono")?.value?.trim() || "";
+  const fecha_boda = $("#fecha_boda")?.value || "";
+
+  if(!nombre || !telefono || !fecha_boda){
+    alert("Por favor completá todos los campos obligatorios.");
+    return;
+  }
+
+  lead = { nombre, telefono, fecha_boda };
+
   locked = true;
 
   const computed = computeArchetype(answers);
-  const intensity = computeIntensity(intensityAnswers, lead.vision_musical);
+  const intensity = computeIntensity(intensityAnswers);
   const pr = computePriority(lead, intensity);
   const indice = getDesignIndex(pr.prioridad);
 
@@ -516,13 +477,9 @@ btnNext?.addEventListener("click", async () => {
 
   if (!sending){
     sending = true;
-    try{
-      await enviarLeadASheets(payload);
-    }catch(err){
-      console.error("Error guardando lead:", err);
-    }finally{
-      sending = false;
-    }
+    try{ await enviarLeadASheets(payload); }
+    catch(err){ console.error("Error guardando lead:", err); }
+    finally{ sending = false; }
   }
 
   locked = false;
@@ -530,10 +487,8 @@ btnNext?.addEventListener("click", async () => {
 
 btnToggleDetails?.addEventListener("click", () => {
   const willShow = resultDetails.classList.contains("hidden") || resultDetails.hidden === true;
-
   resultDetails.hidden = !willShow;
   resultDetails.classList.toggle("hidden", !willShow);
-
   btnToggleDetails.textContent = willShow ? "Ocultar análisis completo" : "Ver análisis completo";
 });
 
@@ -546,13 +501,6 @@ btnRetry?.addEventListener("click", () => {
   locked = false;
 
   leadForm.reset();
-  venueOtroField.hidden = true;
-  venueOtroField.classList.add("hidden");
-
-  if (venueOtroInput){
-    venueOtroInput.required = false;
-    venueOtroInput.value = "";
-  }
 
   resultDetails.hidden = true;
   resultDetails.classList.add("hidden");
@@ -562,7 +510,7 @@ btnRetry?.addEventListener("click", () => {
 });
 
 // ================================
-// RENDER QUESTION
+// RENDER QUIZ
 // ================================
 function setNextLabelAndHint(){
   const isLast = currentQ === questions.length - 1;
@@ -578,7 +526,7 @@ function renderQuestion(){
   qTitle.textContent = q.title;
   qCount.textContent = `${currentQ + 1} de ${questions.length}`;
 
-  const quizProgress = Math.round(((currentQ + 1) / questions.length) * 100);
+  const quizProgress = Math.round(((currentQ + 1) / questions.length) * 90);
   quizBar.style.width = `${quizProgress}%`;
 
   qOptions.innerHTML = "";
@@ -617,7 +565,7 @@ function renderQuestion(){
 }
 
 // ================================
-// COMPUTE ARCHETYPE (desempate mejorado)
+// COMPUTE ARCHETYPE (desempate por última coincidencia)
 // ================================
 function computeArchetype(ans){
   const scores = {A:0, B:0, C:0, D:0, E:0};
@@ -627,7 +575,6 @@ function computeArchetype(ans){
   const max = Math.max(...entries.map(([,v]) => v));
   let tied = entries.filter(([,v]) => v === max).map(([k]) => k);
 
-  // desempate: última respuesta del empate
   if (tied.length > 1){
     for (let i = ans.length - 1; i >= 0; i--){
       if (tied.includes(ans[i])) { tied = [ans[i]]; break; }
@@ -649,43 +596,38 @@ function computeArchetype(ans){
 }
 
 // ================================
-// COMPUTE INTENSITY (desempate mejorado)
+// COMPUTE INTENSITY (solo por M1/M2/M3)
 // ================================
-function computeIntensity(intensityArr, visionMusical){
+function computeIntensity(intensityArr){
   const m = {M1:0, M2:0, M3:0};
   intensityArr.forEach(x => { if(x && m[x] !== undefined) m[x]++; });
-
-  if (visionMusical.includes("sencillo")) m.M1 += 1;
-  if (visionMusical.includes("elegante")) m.M2 += 1;
-  if (visionMusical.includes("impactante")) m.M3 += 1;
-  if (visionMusical.includes("asesoramiento")) m.M2 += 1;
 
   const entries = Object.entries(m);
   const max = Math.max(...entries.map(([,v]) => v));
   let tied = entries.filter(([,v]) => v === max).map(([k]) => k);
 
-  // desempate: última intensidad elegida que coincida
   if (tied.length > 1){
     for (let i = intensityArr.length - 1; i >= 0; i--){
       const val = intensityArr[i];
       if (val && tied.includes(val)) { tied = [val]; break; }
     }
   }
-
   return tied[0];
 }
 
 // ================================
-// PAYLOAD + SEND
+// PAYLOAD + SEND (mantengo campos antiguos en blanco por compatibilidad)
 // ================================
 function buildPayload(lead, answers, intensityAnswers, computed, intensity, prioridad, points, indice){
   return {
     nombre: lead.nombre,
     telefono: lead.telefono,
     fecha_boda: lead.fecha_boda,
-    venue: lead.venue,
-    invitados: lead.invitados,
-    vision_musical: lead.vision_musical,
+
+    // compatibilidad (antes existían)
+    venue: "",
+    invitados: "",
+    vision_musical: "",
 
     q1: answers[0], q2: answers[1], q3: answers[2], q4: answers[3], q5: answers[4],
     q6: answers[5], q7: answers[6], q8: answers[7], q9: answers[8], q10: answers[9],
@@ -721,7 +663,7 @@ async function enviarLeadASheets(payload){
 }
 
 // ================================
-// SETLIST RENDER HELPERS
+// SETLIST HELPERS
 // ================================
 function getSetlistTeasers_(primaryKey, intensity, max = 2){
   const sl = setlists[primaryKey];
@@ -766,7 +708,7 @@ function renderSetlistHTML_(primaryKey, intensity){
     <p class="muted">${escapeHtml(sl.title)}</p>
     ${momentsHtml}
     ${addOnHtml}
-    <p class="fineprint">*El setlist es una guía. Se ajusta a timing real, iglesia/venue y canciones significativas de la pareja.</p>
+    <p class="fineprint">*El setlist es una guía. Se ajusta a timing real y canciones significativas de la pareja.</p>
   `;
 }
 
@@ -843,7 +785,7 @@ function renderResult(computed, intensity, prioridad, indice){
     ${renderSetlistHTML_(computed.primary, intensity)}
   `;
 
-  // por UX: oculto por defecto
+  // oculto por defecto
   resultDetails.hidden = true;
   resultDetails.classList.add("hidden");
   btnToggleDetails.textContent = "Ver análisis completo";
@@ -856,5 +798,4 @@ function renderResult(computed, intensity, prioridad, indice){
 // INIT
 // ================================
 show("#screen-intro");
-console.log("✅ Test premium cargado OK");
-
+console.log("✅ Test premium final (form al final) cargado OK");
