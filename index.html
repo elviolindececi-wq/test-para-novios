@@ -78,10 +78,41 @@
 
         <!-- ✅ NUEVO: Venue dentro del formulario -->
         <div class="field">
-          <label for="venue">¿Dónde será su venue? <span class="req">*</span></label>
-          <input id="venue" name="venue" type="text" placeholder="Ej: Salón X, Quinta Y, Iglesia Z…" required />
-          <small>Podés escribir libremente el lugar o venue.</small>
-        </div>
+  <label for="venue">¿Dónde será su venue? <span class="req">*</span></label>
+  <select id="venue" name="venue" required>
+    <option value="" selected disabled>Elegí una opción</option>
+
+    <option>Casa 1927</option>
+    <option>Casa Corbellani</option>
+    <option>Casa Puente</option>
+    <option>Castillo</option>
+    <option>Castillo Remanso</option>
+    <option>Es Vedra</option>
+    <option>Isabella</option>
+    <option>La Glorieta</option>
+    <option>La Isabella</option>
+    <option>La Riviere</option>
+    <option>Las Takuaras</option>
+    <option>Mantra</option>
+    <option>Mantra Salon Boutique</option>
+    <option>Puerto Liebig</option>
+    <option>Royal</option>
+    <option>Royal eventos</option>
+    <option>Rusticana</option>
+    <option>Rusticana Eventos</option>
+    <option>Soir</option>
+    <option>Soir Eventos</option>
+    <option>Talleryrand</option>
+    <option>Talleryrand Costanera</option>
+    <option>Tiam Eventos</option>
+    <option>Villa Jardin</option>
+    <option>Villa Maria</option>
+    <option>Vista Verde</option>
+
+    <option>Otro / No está en la lista</option>
+  </select>
+  <small>Si elegís “Otro”, puntúa 0.</small>
+</div>
 
         <!-- ✅ NUEVO: Invitados dentro del formulario -->
         <div class="field">
