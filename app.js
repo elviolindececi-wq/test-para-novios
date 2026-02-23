@@ -1,30 +1,29 @@
 // ================================
-// EL VIOLÍN DE CECI — TEST PREMIUM (FINAL)
-// ✅ Formulario SOLO al final (Nombre, Teléfono, Fecha)
-// ✅ Resultado SOLO después de completar el form final
+// EL VIOLÍN DE CECI — TEST (FINAL)
+// ✅ Venue + Invitados dentro del formulario final
+// ✅ Resultados solo después del submit del formulario
 // ✅ WhatsApp + Apps Script intactos
 // ================================
 
 const WEBHOOK_URL = "https://script.google.com/macros/s/AKfycbyq6c75P3nxAqX1WEj47zR468SyBmyrdKdQJiStmcVvS8SZYpkMkpqmHnd7lCyIYLO2kg/exec";
 const WHATSAPP_BASE = "https://wa.me/595985689454";
+const INSTAGRAM_URL = "https://www.instagram.com/elviolindececi/";
 
 const $ = (sel) => document.querySelector(sel);
 
 function show(id){
   document.querySelectorAll(".screen").forEach(s => {
-    s.hidden = true;
-    s.setAttribute("hidden", "hidden");
     s.classList.add("hidden");
+    s.setAttribute("hidden", "hidden");
   });
-
   const el = document.querySelector(id);
-  if (!el) return console.error("No existe screen:", id);
-
-  el.hidden = false;
-  el.removeAttribute("hidden");
+  if (!el){
+    console.error("No existe screen:", id);
+    return;
+  }
   el.classList.remove("hidden");
-
-  window.scrollTo({ top: 0, behavior: "smooth" });
+  el.removeAttribute("hidden");
+  window.scrollTo({ top:0, behavior:"smooth" });
 }
 
 function escapeHtml(str){
@@ -143,7 +142,7 @@ const questions = [
 ];
 
 // ================================
-// ARCHETYPES + MODULES
+// ARCHETYPES
 // ================================
 const archetypes = {
   A: {
@@ -210,7 +209,7 @@ const musicModules = {
 };
 
 // ================================
-// SETLISTS
+// SETLISTS + ADDONS
 // ================================
 const setlists = {
   A: {
@@ -335,7 +334,7 @@ const intensityAddOns = {
 };
 
 // ================================
-// PRIORIDAD + ÍNDICE (con datos disponibles: fecha + intensidad)
+// PRIORIDAD + ÍNDICE
 // ================================
 function daysUntil(dateStr){
   if(!dateStr) return null;
@@ -352,6 +351,19 @@ function computePriority(lead, intensity){
   if (intensity === "M2") points += 2;
   if (intensity === "M3") points += 3;
 
+  // invitados
+  if (lead.invitados === "80 – 150") points += 1;
+  if (lead.invitados === "150 – 250") points += 2;
+  if (lead.invitados === "Más de 250") points += 3;
+
+  // venue (texto libre)
+  const v = (lead.venue || "").toLowerCase();
+  if (v.includes("hotel")) points += 2;
+  if (v.includes("quinta") || v.includes("estancia")) points += 2;
+  if (v.includes("playa") || v.includes("destino")) points += 2;
+  if (v.includes("salon") || v.includes("salón")) points += 1;
+
+  // fecha
   const days = daysUntil(lead.fecha_boda);
   if (days !== null){
     if (days <= 90) points += 3;
@@ -360,8 +372,8 @@ function computePriority(lead, intensity){
   }
 
   let prioridad = "C";
-  if (points >= 5) prioridad = "A";
-  else if (points >= 3) prioridad = "B";
+  if (points >= 8) prioridad = "A";
+  else if (points >= 5) prioridad = "B";
 
   return { prioridad, points };
 }
@@ -411,6 +423,7 @@ const resultDetails = $("#result-details");
 const btnToggleDetails = $("#btn-toggle-details");
 const btnRetry = $("#btn-retry");
 const btnWA = $("#btn-wa");
+const btnIG = $("#btn-ig");
 
 // ================================
 // EVENTS
@@ -436,14 +449,13 @@ btnNext?.addEventListener("click", () => {
   if (!answers[currentQ]) return;
 
   const isLast = currentQ === questions.length - 1;
-
   if (!isLast){
     currentQ++;
     renderQuestion();
     return;
   }
 
-  // Al final: mostrar formulario (no resultados)
+  // ✅ Al final del test: recién muestra formulario
   show("#screen-lead");
 });
 
@@ -455,18 +467,19 @@ leadForm?.addEventListener("submit", async (e) => {
   const nombre = $("#nombre")?.value?.trim() || "";
   const telefono = $("#telefono")?.value?.trim() || "";
   const fecha_boda = $("#fecha_boda")?.value || "";
+  const venue = $("#venue")?.value?.trim() || "";
+  const invitados = $("#invitados")?.value || "";
 
-  if(!nombre || !telefono || !fecha_boda){
+  if(!nombre || !telefono || !fecha_boda || !venue || !invitados){
     alert("Por favor completá todos los campos obligatorios.");
     return;
   }
 
-  lead = { nombre, telefono, fecha_boda };
-
+  lead = { nombre, telefono, fecha_boda, venue, invitados };
   locked = true;
 
   const computed = computeArchetype(answers);
-  const intensity = computeIntensity(intensityAnswers);
+  const intensity = computeIntensity(intensityAnswers, lead);
   const pr = computePriority(lead, intensity);
   const indice = getDesignIndex(pr.prioridad);
 
@@ -501,7 +514,6 @@ btnRetry?.addEventListener("click", () => {
   locked = false;
 
   leadForm.reset();
-
   resultDetails.hidden = true;
   resultDetails.classList.add("hidden");
   btnToggleDetails.textContent = "Ver análisis completo";
@@ -509,14 +521,16 @@ btnRetry?.addEventListener("click", () => {
   show("#screen-intro");
 });
 
+if (btnIG) btnIG.setAttribute("href", INSTAGRAM_URL);
+
 // ================================
-// RENDER QUIZ
+// RENDER QUESTION
 // ================================
 function setNextLabelAndHint(){
   const isLast = currentQ === questions.length - 1;
   btnNext.textContent = isLast ? "Quiero ver mis resultados" : "Siguiente";
   qHint.textContent = isLast
-    ? "Elegí una opción y luego tocá “Quiero ver mis resultados”."
+    ? "Elegí una opción y tocá “Quiero ver mis resultados”."
     : "Elegí una opción para habilitar “Siguiente”.";
 }
 
@@ -539,25 +553,16 @@ function renderQuestion(){
     const b = document.createElement("button");
     b.type = "button";
     b.className = "opt" + (answers[currentQ] === opt.key ? " selected" : "");
-    b.setAttribute("aria-pressed", answers[currentQ] === opt.key ? "true" : "false");
     b.innerHTML = `<span class="k">${opt.key}</span>${escapeHtml(opt.text)}`;
 
     b.addEventListener("click", () => {
-      if (locked) return;
-
       answers[currentQ] = opt.key;
       intensityAnswers[currentQ] = opt.music || null;
 
-      [...qOptions.children].forEach(ch => {
-        ch.classList.remove("selected");
-        ch.setAttribute("aria-pressed", "false");
-      });
-
+      [...qOptions.children].forEach(ch => ch.classList.remove("selected"));
       b.classList.add("selected");
-      b.setAttribute("aria-pressed", "true");
-      btnNext.disabled = false;
 
-      setNextLabelAndHint();
+      btnNext.disabled = false;
     });
 
     qOptions.appendChild(b);
@@ -565,7 +570,7 @@ function renderQuestion(){
 }
 
 // ================================
-// COMPUTE ARCHETYPE (desempate por última coincidencia)
+// COMPUTE ARCHETYPE & INTENSITY
 // ================================
 function computeArchetype(ans){
   const scores = {A:0, B:0, C:0, D:0, E:0};
@@ -595,12 +600,22 @@ function computeArchetype(ans){
   return { scores, primary, secondary: secTied[0] };
 }
 
-// ================================
-// COMPUTE INTENSITY (solo por M1/M2/M3)
-// ================================
-function computeIntensity(intensityArr){
+function computeIntensity(intensityArr, lead){
   const m = {M1:0, M2:0, M3:0};
   intensityArr.forEach(x => { if(x && m[x] !== undefined) m[x]++; });
+
+  // invitados influyen
+  if (lead.invitados === "150 – 250") m.M2 += 1;
+  if (lead.invitados === "Más de 250") m.M3 += 2;
+  if (lead.invitados === "Menos de 80") m.M1 += 1;
+
+  // venue texto influye
+  const v = (lead.venue || "").toLowerCase();
+  if (v.includes("hotel")) m.M2 += 1;
+  if (v.includes("salon") || v.includes("salón")) m.M2 += 1;
+  if (v.includes("quinta") || v.includes("estancia")) m.M2 += 1;
+  if (v.includes("playa") || v.includes("destino")) m.M3 += 1;
+  if (v.includes("iglesia") || v.includes("capilla")) m.M1 += 1;
 
   const entries = Object.entries(m);
   const max = Math.max(...entries.map(([,v]) => v));
@@ -616,7 +631,7 @@ function computeIntensity(intensityArr){
 }
 
 // ================================
-// PAYLOAD + SEND (mantengo campos antiguos en blanco por compatibilidad)
+// PAYLOAD + SEND
 // ================================
 function buildPayload(lead, answers, intensityAnswers, computed, intensity, prioridad, points, indice){
   return {
@@ -624,9 +639,11 @@ function buildPayload(lead, answers, intensityAnswers, computed, intensity, prio
     telefono: lead.telefono,
     fecha_boda: lead.fecha_boda,
 
-    // compatibilidad (antes existían)
-    venue: "",
-    invitados: "",
+    // ✅ columnas del Sheets
+    venue: lead.venue,
+    invitados: lead.invitados,
+
+    // compat (si tu sheet lo tenía)
     vision_musical: "",
 
     q1: answers[0], q2: answers[1], q3: answers[2], q4: answers[3], q5: answers[4],
@@ -668,20 +685,16 @@ async function enviarLeadASheets(payload){
 function getSetlistTeasers_(primaryKey, intensity, max = 2){
   const sl = setlists[primaryKey];
   const addOn = intensityAddOns[intensity];
-
   const picks = [];
   if (sl?.moments?.[0]?.songs?.[0]) picks.push(sl.moments[0].songs[0]);
-
   if (picks.length < max && addOn?.add?.[0]) picks.push(addOn.add[0]);
   else if (picks.length < max && sl?.moments?.[1]?.songs?.[0]) picks.push(sl.moments[1].songs[0]);
-
   return picks.slice(0, max);
 }
 
 function renderSetlistHTML_(primaryKey, intensity){
   const sl = setlists[primaryKey];
   const addOn = intensityAddOns[intensity];
-
   if (!sl) return `<p class="muted">No encontramos setlist para este perfil.</p>`;
 
   const momentsHtml = sl.moments.map(m => {
@@ -719,7 +732,6 @@ function renderResult(computed, intensity, prioridad, indice){
   const a1 = archetypes[computed.primary];
   const a2 = archetypes[computed.secondary];
   const m = musicModules[intensity];
-
   const teasers = getSetlistTeasers_(computed.primary, intensity, 2);
 
   resultTitle.textContent = `Resultado: ${a1.name}`;
@@ -728,14 +740,17 @@ function renderResult(computed, intensity, prioridad, indice){
   resultBrief.innerHTML = `
     <h3>${escapeHtml(a1.tagline)}</h3>
     <p>${escapeHtml(a1.brief)}</p>
+
+    <p class="muted" style="margin-top:8px;">
+      📍 Lugar: ${escapeHtml(lead.venue || "—")} · 👥 Invitados: ${escapeHtml(lead.invitados || "—")}
+    </p>
+
     <hr/>
     <h3>🎻 Estilo musical: ${escapeHtml(m.name)}</h3>
     <p>${escapeHtml(m.brief)}</p>
     <hr/>
     <h3>🎵 Teaser de setlist (ideal para ustedes)</h3>
-    <ul>
-      ${teasers.map(t => `<li>${escapeHtml(t)}</li>`).join("")}
-    </ul>
+    <ul>${teasers.map(t => `<li>${escapeHtml(t)}</li>`).join("")}</ul>
     <p class="muted" style="margin-top:10px;">En el análisis completo está el setlist por momentos (ceremonia, cóctel y wow).</p>
   `;
 
@@ -785,12 +800,11 @@ function renderResult(computed, intensity, prioridad, indice){
     ${renderSetlistHTML_(computed.primary, intensity)}
   `;
 
-  // oculto por defecto
   resultDetails.hidden = true;
   resultDetails.classList.add("hidden");
   btnToggleDetails.textContent = "Ver análisis completo";
 
-  const text = `Hola Ceci! Hicimos el test y nos salió: ${a1.name} (secundario: ${a2.name}). Intensidad: ${m.name}. Prioridad interna: ${prioridad}. Queremos una propuesta personalizada 🙌`;
+  const text = `Hola Ceci! Hicimos el test y nos salió: ${a1.name} (secundario: ${a2.name}). Intensidad: ${m.name}. Invitados: ${lead.invitados || "-"} · Lugar: ${lead.venue || "-"}. Prioridad interna: ${prioridad}. Queremos una propuesta personalizada 🙌`;
   btnWA.setAttribute("href", `${WHATSAPP_BASE}?text=${encodeURIComponent(text)}`);
 }
 
@@ -798,4 +812,4 @@ function renderResult(computed, intensity, prioridad, indice){
 // INIT
 // ================================
 show("#screen-intro");
-console.log("✅ Test premium final (form al final) cargado OK");
+console.log("✅ app.js FINAL (venue+invitados en formulario) cargado OK");
