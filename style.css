@@ -40,7 +40,7 @@ body{
   padding: 26px 16px 44px;
 }
 
-/* A prueba de balas */
+/* ✅ A prueba de balas */
 [hidden]{ display:none !important; }
 .hidden{ display:none !important; }
 
@@ -236,12 +236,6 @@ p{ color: var(--txt); line-height: 1.62; margin: 0 0 10px; }
   box-shadow: 0 14px 30px rgba(0,0,0,.30);
 }
 .ghost{ background: transparent; }
-
-.btn:focus-visible{
-  outline:none;
-  box-shadow: 0 0 0 4px rgba(255,255,255,.10);
-  border-color: rgba(255,255,255,.25);
-}
 
 /* RESULT BOX */
 .result-box{
