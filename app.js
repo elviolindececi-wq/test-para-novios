@@ -356,12 +356,59 @@ function computePriority(lead, intensity){
   if (lead.invitados === "150 – 250") points += 2;
   if (lead.invitados === "Más de 250") points += 3;
 
-  // venue (texto libre)
-  const v = (lead.venue || "").toLowerCase();
-  if (v.includes("hotel")) points += 2;
-  if (v.includes("quinta") || v.includes("estancia")) points += 2;
-  if (v.includes("playa") || v.includes("destino")) points += 2;
-  if (v.includes("salon") || v.includes("salón")) points += 1;
+ // ✅ Venue por lista (exacto) — tu tabla
+const VENUE_POINTS = {
+  // +2
+  "la riviere": 2,
+  "es vedra": 2,
+  "las takuaras": 2,
+  "castillo remanso": 2,
+  "casa puente": 2,
+  "castillo": 2,
+  "puerto liebig": 2,
+  "talleryrand": 2,
+  "talleryrand costanera": 2,
+  "villa maria": 2,
+  "casa corbellani": 2,
+
+  // +1
+  "villa jardin": 1,
+  "royal": 1,
+  "royal eventos": 1,
+  "soir": 1,
+  "soir eventos": 1,
+  "vista verde": 1,
+  "la isabella": 1,
+  "casa 1927": 1,
+  "la glorieta": 1,
+  "mantra salon boutique": 1,
+
+  // +0 explícitos
+  "rusticana": 0,
+  "rusticana eventos": 0,
+  "isabella": 0,
+  "tiam eventos": 0,
+  "mantra": 0
+};
+
+function normalizeVenue(s){
+  return (s || "")
+    .toLowerCase()
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "") // saca tildes
+    .replace(/\s+/g, " ")
+    .trim();
+}
+
+// Venue (viene del <select>)
+const v = normalizeVenue(lead.venue);
+
+// Si es “Otro / No está en la lista” => 0
+if (!v || v.includes("otro")) {
+  points += 0;
+} else {
+  points += (VENUE_POINTS[v] ?? 0);
+}
 
   // fecha
   const days = daysUntil(lead.fecha_boda);
