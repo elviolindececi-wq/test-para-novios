@@ -32,7 +32,7 @@
     <!-- QUIZ -->
     <section class="card screen hidden" id="screen-quiz" aria-live="polite" hidden>
       <div class="progress" aria-label="Progreso del test">
-        <div class="bar" id="quiz-bar" style="width: 0%"></div>
+        <div class="bar" id="quiz-bar" style="width:0%"></div>
       </div>
 
       <div class="quiz-head">
@@ -50,10 +50,10 @@
       </div>
     </section>
 
-    <!-- FORM FINAL (APARECE AL FINAL) -->
+    <!-- FORM FINAL (AL FINAL DEL TEST) -->
     <section class="card screen hidden" id="screen-lead" hidden>
       <div class="progress" aria-label="Paso final">
-        <div class="bar" id="lead-bar" style="width: 92%"></div>
+        <div class="bar" style="width: 92%"></div>
       </div>
 
       <h2>Último paso para ver sus resultados</h2>
@@ -74,6 +74,25 @@
         <div class="field">
           <label for="fecha_boda">Fecha de la boda <span class="req">*</span></label>
           <input id="fecha_boda" name="fecha_boda" type="date" required />
+        </div>
+
+        <!-- ✅ NUEVO: Venue dentro del formulario -->
+        <div class="field">
+          <label for="venue">¿Dónde será su boda? <span class="req">*</span></label>
+          <input id="venue" name="venue" type="text" placeholder="Ej: Salón X, Quinta Y, Iglesia Z…" required />
+          <small>Podés escribir libremente el lugar o venue.</small>
+        </div>
+
+        <!-- ✅ NUEVO: Invitados dentro del formulario -->
+        <div class="field">
+          <label for="invitados">Cantidad aproximada de invitados <span class="req">*</span></label>
+          <select id="invitados" name="invitados" required>
+            <option value="" selected disabled>Elegí una opción</option>
+            <option>Menos de 80</option>
+            <option>80 – 150</option>
+            <option>150 – 250</option>
+            <option>Más de 250</option>
+          </select>
         </div>
 
         <div class="cta-row split stack">
@@ -126,7 +145,7 @@
     </footer>
   </main>
 
-  <script src="app.js" defer></script>
+  <!-- ✅ Anti-cache: subí el número cuando actualices -->
+  <script src="app.js?v=2" defer></script>
 </body>
 </html>
-
