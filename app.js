@@ -370,6 +370,7 @@ const VENUE_POINTS = {
   "talleryrand costanera": 2,
   "villa maria": 2,
   "casa corbellani": 2,
+  "Casita Quinta": 2,
 
   // +1
   "villa jardin": 1,
