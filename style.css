@@ -382,3 +382,10 @@ hr{
   .cta-row.split{ gap: 8px; }
   .btn{ padding: 12px 12px; }
 }
+/* Nota del venue en rojo */
+.venue-note {
+  color: #ff4d4f;
+  font-size: 12.5px;
+  margin-top: 6px;
+  display: block;
+}
