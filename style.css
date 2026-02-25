@@ -1,3 +1,4 @@
+/* style.css */
 :root{
   --bg:#0b0b0f;
   --card:#12131a;
@@ -126,12 +127,18 @@ h2{
   line-height:1.25;
   transition: transform .06s ease, background .15s ease, border-color .15s ease;
 }
-.opt:hover{ background: rgba(255,255,255,.05); }
 .opt:active{ transform: scale(.99); }
 .opt.selected{
   border-color: rgba(215,180,106,.7);
   background: rgba(215,180,106,.10);
 }
+
+/* ✅ Hover solo donde realmente existe hover (evita "hover pegado" en mobile) */
+@media (hover:hover) and (pointer:fine){
+  .opt:hover{ background: rgba(255,255,255,.05); }
+  .btn:hover{ background: rgba(255,255,255,.06); }
+}
+
 .k{
   display:inline-grid;
   place-items:center;
@@ -173,7 +180,6 @@ h2{
   gap:8px;
   min-width: 160px;
 }
-.btn:hover{ background: rgba(255,255,255,.06); }
 .btn:active{ transform: scale(.99); }
 .btn:disabled{
   opacity:.45;
@@ -206,6 +212,9 @@ h2{
   background: rgba(0,0,0,.25);
   color: var(--text);
   outline:none;
+
+  /* ✅ iOS: evitar zoom en inputs */
+  font-size:16px;
 }
 .field small{
   display:block;
@@ -248,7 +257,7 @@ h2{
   line-height:1.4;
 }
 
-/* ✅ Venue note rojo (como antes) */
+/* ✅ Venue note rojo */
 .field small.venue-note{
   color:#e05a5a;
   font-weight:500;
@@ -316,7 +325,16 @@ h2{
     0 0 10px rgba(215,180,106,.20),
     inset 0 1px 0 rgba(255,255,255,.10);
 }
+.q-title-text{ display:block; }
 
-.q-title-text{
-  display:block;
+/* ==========================
+   ✅ FOCUS VISIBLE (accesibilidad + premium)
+   ========================== */
+.opt:focus-visible,
+.btn:focus-visible,
+.field input:focus-visible,
+.field select:focus-visible,
+.slider:focus-visible{
+  outline: 2px solid rgba(215,180,106,.75);
+  outline-offset: 2px;
 }
