@@ -1,11 +1,13 @@
 // ================================
 // EL VIOLÍN DE CECI — TEST (FINAL)
-// ✅ Venue + Invitados dentro del formulario final
-// ✅ Resultados solo después del submit del formulario
-// ✅ WhatsApp + Apps Script intactos
+// ✅ 8 preguntas
+// ✅ planning_vibe (no literal)
+// ✅ slider 0–10 music_importance
+// ✅ curation_style (cero estrés vs involucrarse)
+// ✅ Envía: music_importance, planning_vibe_label, curation_style_label
 // ================================
 
-const WEBHOOK_URL = "https://script.google.com/macros/s/AKfycbyq6c75P3nxAqX1WEj47zR468SyBmyrdKdQJiStmcVvS8SZYpkMkpqmHnd7lCyIYLO2kg/exec";
+const WEBHOOK_URL = "https://script.google.com/macros/s/AKfycbyM1hmE4bGWAx0VW6AYZSFN1XX6f8B0S5GbQkVOSe8o2vQgZ_jIPGeuqlmJJlxs3Kr-8Q/exec";
 const WHATSAPP_BASE = "https://wa.me/595985689454";
 const INSTAGRAM_URL = "https://www.instagram.com/elviolindececi/";
 
@@ -36,11 +38,16 @@ function escapeHtml(str){
 }
 
 // ================================
-// QUESTIONS (10)
+// QUESTIONS (8)
+// - Las de tipo "options" usan botones
+// - La de tipo "slider" usa range 0–10 y guarda music_importance
 // ================================
 const questions = [
   {
+    id: "q1",
+    type: "options",
     title: "🖼 Si su boda fuera una escena de película, sería…",
+    hint: "Elegí una opción para habilitar “Siguiente”.",
     options: [
       { key:"A", text:"Una entrada majestuosa en un salón elegante. Todo se siente impecable.", music:"M2" },
       { key:"B", text:"Ceremonia al aire libre con luz dorada y emoción genuina.", music:"M1" },
@@ -50,7 +57,10 @@ const questions = [
     ]
   },
   {
+    id: "q2",
+    type: "options",
     title: "📍 Elijan el espacio que más los representa:",
+    hint: "Elegí una opción para habilitar “Siguiente”.",
     options: [
       { key:"A", text:"Hotel clásico o salón con arquitectura imponente.", music:"M2" },
       { key:"B", text:"Jardín / quinta / entorno natural.", music:"M1" },
@@ -60,7 +70,22 @@ const questions = [
     ]
   },
   {
+    id: "q3",
+    type: "options",
+    title: "🧩 Hoy, la planificación de su boda se siente más como…",
+    hint: "Elegí lo que más se parezca a cómo lo están viviendo (no hay respuestas “malas”).",
+    options: [
+      { key:"P_A", text:"Un tablero ordenado: todo va encajando.", label:"Tablero ordenado (todo va encajando)" },
+      { key:"P_B", text:"Un moodboard en construcción: estamos inspirándonos.", label:"Moodboard en construcción (inspiración)" },
+      { key:"P_C", text:"Una lista infinita: hay mucho por resolver.", label:"Lista infinita (mucho por resolver)" },
+      { key:"P_D", text:"Una aventura: vamos paso a paso.", label:"Aventura paso a paso (relajados)" }
+    ]
+  },
+  {
+    id: "q4",
+    type: "options",
     title: "🎶 Su entrada debería sentirse como…",
+    hint: "Elegí una opción para habilitar “Siguiente”.",
     options: [
       { key:"A", text:"Solemne y elegante, perfectamente sincronizada.", music:"M2" },
       { key:"B", text:"Dulce y romántica, sin forzar nada.", music:"M1" },
@@ -70,17 +95,10 @@ const questions = [
     ]
   },
   {
-    title: "💬 ¿Qué quieren que sus invitados digan al irse?",
-    options: [
-      { key:"A", text:"“Qué boda tan elegante y bien pensada.”", music:"M2" },
-      { key:"B", text:"“Se sentía tanto amor en el aire.”", music:"M1" },
-      { key:"C", text:"“Nunca vi algo así.”", music:"M3" },
-      { key:"D", text:"“Fue la mejor fiesta del año.”", music:"M3" },
-      { key:"E", text:"“Fue pequeña, pero la más significativa.”", music:"M1" }
-    ]
-  },
-  {
+    id: "q5",
+    type: "options",
     title: "🎻 ¿Qué rol debería tener la música en su boda?",
+    hint: "Elegí una opción para habilitar “Siguiente”.",
     options: [
       { key:"A", text:"Acompañar con sofisticación y marcar momentos importantes.", music:"M2" },
       { key:"B", text:"Crear atmósfera romántica sin invadir.", music:"M1" },
@@ -90,17 +108,18 @@ const questions = [
     ]
   },
   {
-    title: "✨ Elijan la estética que más los identifica:",
-    options: [
-      { key:"A", text:"Clásico refinado, tonos neutros, lujo sutil.", music:"M2" },
-      { key:"B", text:"Natural, orgánico, suave.", music:"M1" },
-      { key:"C", text:"Editorial, audaz, con detalles inesperados.", music:"M3" },
-      { key:"D", text:"Glamour festivo, con toques llamativos.", music:"M3" },
-      { key:"E", text:"Minimalismo emocional, elegante y profundo.", music:"M1" }
-    ]
+    id: "q6",
+    type: "slider",
+    title: "📊 En su boda, la música para ustedes es…",
+    hint: "Mové el control si querés ajustarlo. Esto nos ayuda a personalizar el resultado.",
+    slider: { min: 0, max: 10, step: 1, defaultValue: 5 },
+    labels: { left: "Acompaña", right: "Es protagonista" }
   },
   {
+    id: "q7",
+    type: "options",
     title: "🥂 ¿Cómo imaginan el cóctel?",
+    hint: "Elegí una opción para habilitar “Siguiente”.",
     options: [
       { key:"A", text:"Instrumental elegante para conversación y ambiente.", music:"M2" },
       { key:"B", text:"Melodías suaves que fluyan naturalmente.", music:"M1" },
@@ -110,33 +129,14 @@ const questions = [
     ]
   },
   {
-    title: "🌙 ¿Qué iluminación los representa?",
+    id: "q8",
+    type: "options",
+    title: "🎼 Para elegir las canciones, ustedes prefieren…",
+    hint: "Lo importante es que sea fácil para ustedes (y que suene increíble).",
     options: [
-      { key:"A", text:"Candelabros y luz cálida sofisticada.", music:"M2" },
-      { key:"B", text:"Luces cálidas entre árboles / velas delicadas.", music:"M1" },
-      { key:"C", text:"Luz dramática, contrastes, atmósfera editorial.", music:"M3" },
-      { key:"D", text:"Luces vibrantes y dinámicas.", music:"M3" },
-      { key:"E", text:"Iluminación tenue, íntima.", music:"M1" }
-    ]
-  },
-  {
-    title: "🕊 Una palabra que describe su relación:",
-    options: [
-      { key:"A", text:"Complicidad.", music:null },
-      { key:"B", text:"Ternura.", music:null },
-      { key:"C", text:"Intensidad.", music:null },
-      { key:"D", text:"Diversión.", music:null },
-      { key:"E", text:"Profundidad.", music:null }
-    ]
-  },
-  {
-    title: "🎼 Si pudieran elegir una sola sensación para su ceremonia:",
-    options: [
-      { key:"A", text:"Admiración.", music:"M2" },
-      { key:"B", text:"Emoción pura.", music:"M1" },
-      { key:"C", text:"Impacto.", music:"M3" },
-      { key:"D", text:"Euforia.", music:"M3" },
-      { key:"E", text:"Conexión.", music:"M1" }
+      { key:"C_A", text:"Que Ceci lo resuelva por nosotros (cero estrés).", label:"Que Ceci lo resuelva (cero estrés)" },
+      { key:"C_B", text:"Mitad y mitad: Ceci propone + nosotros elegimos.", label:"Mitad y mitad (Ceci propone + nosotros eligen)" },
+      { key:"C_C", text:"Queremos involucrarnos y elegir con detalle.", label:"Quieren involucrarse (detalle)" }
     ]
   }
 ];
@@ -209,7 +209,7 @@ const musicModules = {
 };
 
 // ================================
-// SETLISTS + ADDONS
+// SETLISTS + ADDONS (igual que tu versión)
 // ================================
 const setlists = {
   A: {
@@ -344,6 +344,15 @@ function daysUntil(dateStr){
   return Math.ceil((d.getTime() - now.getTime()) / (1000*60*60*24));
 }
 
+function normalizeVenue(s){
+  return (s || "")
+    .toLowerCase()
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .replace(/\s+/g, " ")
+    .trim();
+}
+
 function computePriority(lead, intensity){
   let points = 0;
 
@@ -356,60 +365,45 @@ function computePriority(lead, intensity){
   if (lead.invitados === "150 – 250") points += 2;
   if (lead.invitados === "Más de 250") points += 3;
 
- // ✅ Venue por lista (exacto) — tu tabla
-const VENUE_POINTS = {
-  // +2
-  "la riviere": 2,
-  "es vedra": 2,
-  "las takuaras": 2,
-  "castillo remanso": 2,
-  "casa puente": 2,
-  "castillo": 2,
-  "puerto liebig": 2,
-  "talleryrand": 2,
-  "talleryrand costanera": 2,
-  "villa maria": 2,
-  "casa corbellani": 2,
-  "Casita Quinta": 2,
+  // venue points
+  const VENUE_POINTS = {
+    // +2
+    "la riviere": 2,
+    "es vedra": 2,
+    "las takuaras": 2,
+    "castillo remanso": 2,
+    "casa puente": 2,
+    "castillo": 2,
+    "puerto liebig": 2,
+    "talleryrand": 2,
+    "talleryrand costanera": 2,
+    "villa maria": 2,
+    "casa corbellani": 2,
+    "casita quinta": 2,
 
-  // +1
-  "villa jardin": 1,
-  "royal": 1,
-  "royal eventos": 1,
-  "soir": 1,
-  "soir eventos": 1,
-  "vista verde": 1,
-  "la isabella": 1,
-  "casa 1927": 1,
-  "la glorieta": 1,
-  "mantra salon boutique": 1,
+    // +1
+    "villa jardin": 1,
+    "royal": 1,
+    "royal eventos": 1,
+    "soir": 1,
+    "soir eventos": 1,
+    "vista verde": 1,
+    "la isabella": 1,
+    "casa 1927": 1,
+    "la glorieta": 1,
+    "mantra salon boutique": 1,
 
-  // +0 explícitos
-  "rusticana": 0,
-  "rusticana eventos": 0,
-  "isabella": 0,
-  "tiam eventos": 0,
-  "mantra": 0
-};
+    // +0
+    "rusticana": 0,
+    "rusticana eventos": 0,
+    "isabella": 0,
+    "tiam eventos": 0,
+    "mantra": 0
+  };
 
-function normalizeVenue(s){
-  return (s || "")
-    .toLowerCase()
-    .normalize("NFD")
-    .replace(/[\u0300-\u036f]/g, "") // saca tildes
-    .replace(/\s+/g, " ")
-    .trim();
-}
-
-// Venue (viene del <select>)
-const v = normalizeVenue(lead.venue);
-
-// Si es “Otro / No está en la lista” => 0
-if (!v || v.includes("otro")) {
-  points += 0;
-} else {
-  points += (VENUE_POINTS[v] ?? 0);
-}
+  const v = normalizeVenue(lead.venue);
+  if (!v || v.includes("otro")) points += 0;
+  else points += (VENUE_POINTS[v] ?? 0);
 
   // fecha
   const days = daysUntil(lead.fecha_boda);
@@ -417,6 +411,13 @@ if (!v || v.includes("otro")) {
     if (days <= 90) points += 3;
     else if (days <= 180) points += 2;
     else if (days <= 365) points += 1;
+  }
+
+  // ✅ music importance (suave, no invasivo)
+  const mi = Number(lead.music_importance);
+  if (Number.isFinite(mi)) {
+    if (mi >= 8) points += 2;
+    else if (mi >= 5) points += 1;
   }
 
   let prioridad = "C";
@@ -448,6 +449,11 @@ let intensityAnswers = Array(questions.length).fill(null);
 let sending = false;
 let locked = false;
 
+// Captura extra (para Sheet y para texto humano)
+let planningVibeLabel = "";
+let curationStyleLabel = "";
+let musicImportance = 5; // default
+
 // ================================
 // ELEMENTS
 // ================================
@@ -463,6 +469,7 @@ const btnNext = $("#btn-next");
 
 const leadForm = $("#lead-form");
 const btnBackToQuiz = $("#btn-back-to-quiz");
+const btnShowResults = $("#btn-show-results");
 
 const resultTitle = $("#result-title");
 const resultSubtitle = $("#result-subtitle");
@@ -481,6 +488,13 @@ btnStart?.addEventListener("click", () => {
   currentQ = 0;
   answers = Array(questions.length).fill(null);
   intensityAnswers = Array(questions.length).fill(null);
+  sending = false;
+  locked = false;
+
+  planningVibeLabel = "";
+  curationStyleLabel = "";
+  musicImportance = questions.find(q => q.type === "slider")?.slider?.defaultValue ?? 5;
+
   renderQuestion();
   show("#screen-quiz");
 });
@@ -494,7 +508,10 @@ btnPrev?.addEventListener("click", () => {
 
 btnNext?.addEventListener("click", () => {
   if (locked) return;
-  if (!answers[currentQ]) return;
+
+  const q = questions[currentQ];
+  const isAnswered = q.type === "slider" ? true : !!answers[currentQ];
+  if (!isAnswered) return;
 
   const isLast = currentQ === questions.length - 1;
   if (!isLast){
@@ -503,11 +520,13 @@ btnNext?.addEventListener("click", () => {
     return;
   }
 
-  // ✅ Al final del test: recién muestra formulario
   show("#screen-lead");
 });
 
-btnBackToQuiz?.addEventListener("click", () => show("#screen-quiz"));
+btnBackToQuiz?.addEventListener("click", () => {
+  renderQuestion();
+  show("#screen-quiz");
+});
 
 leadForm?.addEventListener("submit", async (e) => {
   e.preventDefault();
@@ -523,8 +542,15 @@ leadForm?.addEventListener("submit", async (e) => {
     return;
   }
 
-  lead = { nombre, telefono, fecha_boda, venue, invitados };
+  lead = {
+    nombre, telefono, fecha_boda, venue, invitados,
+    music_importance: musicImportance,
+    planning_vibe_label: planningVibeLabel,
+    curation_style_label: curationStyleLabel
+  };
+
   locked = true;
+  btnShowResults && (btnShowResults.disabled = true);
 
   const computed = computeArchetype(answers);
   const intensity = computeIntensity(intensityAnswers, lead);
@@ -544,6 +570,7 @@ leadForm?.addEventListener("submit", async (e) => {
   }
 
   locked = false;
+  btnShowResults && (btnShowResults.disabled = false);
 });
 
 btnToggleDetails?.addEventListener("click", () => {
@@ -561,6 +588,10 @@ btnRetry?.addEventListener("click", () => {
   sending = false;
   locked = false;
 
+  planningVibeLabel = "";
+  curationStyleLabel = "";
+  musicImportance = questions.find(q => q.type === "slider")?.slider?.defaultValue ?? 5;
+
   leadForm.reset();
   resultDetails.hidden = true;
   resultDetails.classList.add("hidden");
@@ -577,9 +608,11 @@ if (btnIG) btnIG.setAttribute("href", INSTAGRAM_URL);
 function setNextLabelAndHint(){
   const isLast = currentQ === questions.length - 1;
   btnNext.textContent = isLast ? "Quiero ver mis resultados" : "Siguiente";
-  qHint.textContent = isLast
+
+  const q = questions[currentQ];
+  qHint.textContent = q?.hint || (isLast
     ? "Elegí una opción y tocá “Quiero ver mis resultados”."
-    : "Elegí una opción para habilitar “Siguiente”.";
+    : "Elegí una opción para habilitar “Siguiente”.");
 }
 
 function renderQuestion(){
@@ -595,17 +628,67 @@ function renderQuestion(){
   btnPrev.disabled = currentQ === 0;
 
   setNextLabelAndHint();
+
+  // Slider: siempre permite seguir (hay default)
+  if (q.type === "slider"){
+    btnNext.disabled = false;
+
+    const wrap = document.createElement("div");
+    wrap.className = "slider-wrap";
+
+    const top = document.createElement("div");
+    top.className = "slider-top";
+
+    const val = document.createElement("div");
+    val.className = "slider-value";
+    val.textContent = String(musicImportance);
+
+    const range = document.createElement("input");
+    range.type = "range";
+    range.className = "slider";
+    range.min = String(q.slider.min);
+    range.max = String(q.slider.max);
+    range.step = String(q.slider.step);
+    range.value = String(musicImportance);
+
+    range.addEventListener("input", () => {
+      musicImportance = Number(range.value);
+      val.textContent = String(musicImportance);
+    });
+
+    top.appendChild(document.createTextNode("Nivel: "));
+    top.appendChild(val);
+
+    const bottom = document.createElement("div");
+    bottom.className = "slider-labels";
+    bottom.innerHTML = `<span>${escapeHtml(q.labels.left)}</span><span>${escapeHtml(q.labels.right)}</span>`;
+
+    wrap.appendChild(top);
+    wrap.appendChild(range);
+    wrap.appendChild(bottom);
+
+    qOptions.appendChild(wrap);
+    return;
+  }
+
+  // Options
   btnNext.disabled = !answers[currentQ];
 
   q.options.forEach((opt) => {
     const b = document.createElement("button");
     b.type = "button";
     b.className = "opt" + (answers[currentQ] === opt.key ? " selected" : "");
-    b.innerHTML = `<span class="k">${opt.key}</span>${escapeHtml(opt.text)}`;
+
+    // key + texto
+    b.innerHTML = `<span class="k">${escapeHtml(opt.key)}</span>${escapeHtml(opt.text)}`;
 
     b.addEventListener("click", () => {
       answers[currentQ] = opt.key;
       intensityAnswers[currentQ] = opt.music || null;
+
+      // capturas “humanas” para sheet
+      if (q.id === "q3") planningVibeLabel = opt.label || "";
+      if (q.id === "q8") curationStyleLabel = opt.label || "";
 
       [...qOptions.children].forEach(ch => ch.classList.remove("selected"));
       b.classList.add("selected");
@@ -633,7 +716,7 @@ function computeArchetype(ans){
       if (tied.includes(ans[i])) { tied = [ans[i]]; break; }
     }
   }
-  const primary = tied[0];
+  const primary = tied[0] || "B";
 
   const remaining = entries.filter(([k]) => k !== primary).sort((a,b)=>b[1]-a[1]);
   const secMax = remaining[0][1];
@@ -645,7 +728,7 @@ function computeArchetype(ans){
     }
   }
 
-  return { scores, primary, secondary: secTied[0] };
+  return { scores, primary, secondary: secTied[0] || "A" };
 }
 
 function computeIntensity(intensityArr, lead){
@@ -657,13 +740,21 @@ function computeIntensity(intensityArr, lead){
   if (lead.invitados === "Más de 250") m.M3 += 2;
   if (lead.invitados === "Menos de 80") m.M1 += 1;
 
-  // venue texto influye
-  const v = (lead.venue || "").toLowerCase();
+  // venue influye (normalizado)
+  const v = normalizeVenue(lead.venue);
   if (v.includes("hotel")) m.M2 += 1;
-  if (v.includes("salon") || v.includes("salón")) m.M2 += 1;
+  if (v.includes("salon")) m.M2 += 1;
   if (v.includes("quinta") || v.includes("estancia")) m.M2 += 1;
   if (v.includes("playa") || v.includes("destino")) m.M3 += 1;
   if (v.includes("iglesia") || v.includes("capilla")) m.M1 += 1;
+
+  // ✅ music importance (inclina, no manda)
+  const mi = Number(lead.music_importance);
+  if (Number.isFinite(mi)) {
+    if (mi >= 9) m.M3 += 2;
+    else if (mi >= 8) m.M3 += 1;
+    else if (mi <= 3) m.M1 += 1;
+  }
 
   const entries = Object.entries(m);
   const max = Math.max(...entries.map(([,v]) => v));
@@ -675,32 +766,40 @@ function computeIntensity(intensityArr, lead){
       if (val && tied.includes(val)) { tied = [val]; break; }
     }
   }
-  return tied[0];
+  return tied[0] || "M2";
 }
 
 // ================================
 // PAYLOAD + SEND
 // ================================
 function buildPayload(lead, answers, intensityAnswers, computed, intensity, prioridad, points, indice){
+  // compat con tu sheet (q1..q10, m1..m10)
+  const q = (i) => answers[i] || "";
+  const m = (i) => intensityAnswers[i] || "";
+
   return {
     nombre: lead.nombre,
     telefono: lead.telefono,
     fecha_boda: lead.fecha_boda,
 
-    // ✅ columnas del Sheets
     venue: lead.venue,
     invitados: lead.invitados,
-
-    // compat (si tu sheet lo tenía)
     vision_musical: "",
 
-    q1: answers[0], q2: answers[1], q3: answers[2], q4: answers[3], q5: answers[4],
-    q6: answers[5], q7: answers[6], q8: answers[7], q9: answers[8], q10: answers[9],
+    // ✅ nuevas columnas
+    music_importance: lead.music_importance ?? "",
+    planning_vibe_label: lead.planning_vibe_label || "",
+    curation_style_label: lead.curation_style_label || "",
 
-    m1: intensityAnswers[0] || "", m2: intensityAnswers[1] || "", m3: intensityAnswers[2] || "",
-    m4: intensityAnswers[3] || "", m5: intensityAnswers[4] || "", m6: intensityAnswers[5] || "",
-    m7: intensityAnswers[6] || "", m8: intensityAnswers[7] || "", m9: intensityAnswers[8] || "",
-    m10: intensityAnswers[9] || "",
+    // Respuestas (8 reales + 2 vacías)
+    q1: q(0), q2: q(1), q3: q(2), q4: q(3),
+    q5: q(4), q6: "SLIDER", q7: q(6), q8: q(7),
+    q9: "", q10: "",
+
+    // Intensidad por pregunta (8 reales + 2 vacías)
+    m1: m(0), m2: m(1), m3: m(2), m4: m(3), m5: m(4),
+    m6: "", m7: m(6), m8: m(7),
+    m9: "", m10: "",
 
     arquetipo: archetypes[computed.primary].name,
     arquetipo_secundario: archetypes[computed.secondary].name,
@@ -782,8 +881,11 @@ function renderResult(computed, intensity, prioridad, indice){
   const m = musicModules[intensity];
   const teasers = getSetlistTeasers_(computed.primary, intensity, 2);
 
+  const planningText = planningVibeLabel ? ` · 🧩 Planificación: ${planningVibeLabel}` : "";
+  const curationText = curationStyleLabel ? ` · 🎼 Selección: ${curationStyleLabel}` : "";
+
   resultTitle.textContent = `Resultado: ${a1.name}`;
-  resultSubtitle.textContent = `Intensidad musical: ${m.name} · Prioridad interna: ${prioridad}`;
+  resultSubtitle.textContent = `Intensidad musical: ${m.name} · Importancia música: ${musicImportance}/10 · Prioridad interna: ${prioridad}`;
 
   resultBrief.innerHTML = `
     <h3>${escapeHtml(a1.tagline)}</h3>
@@ -791,11 +893,13 @@ function renderResult(computed, intensity, prioridad, indice){
 
     <p class="muted" style="margin-top:8px;">
       📍 Lugar: ${escapeHtml(lead.venue || "—")} · 👥 Invitados: ${escapeHtml(lead.invitados || "—")}
+      ${planningText}${curationText}
     </p>
 
     <hr/>
     <h3>🎻 Estilo musical: ${escapeHtml(m.name)}</h3>
     <p>${escapeHtml(m.brief)}</p>
+
     <hr/>
     <h3>🎵 Teaser de setlist (ideal para ustedes)</h3>
     <ul>${teasers.map(t => `<li>${escapeHtml(t)}</li>`).join("")}</ul>
@@ -815,6 +919,18 @@ function renderResult(computed, intensity, prioridad, indice){
       </div>
     </div>
   `;
+
+  const curationBlock = curationStyleLabel ? `
+    <hr/>
+    <h3>🎼 Cómo les conviene elegir las canciones</h3>
+    <p>${
+      curationStyleLabel.includes("cero estrés")
+        ? "Les conviene un set completo propuesto por Ceci para aprobar en un solo paso: rápido, hermoso y sin carga mental."
+        : curationStyleLabel.includes("Mitad")
+          ? "Les conviene un proceso mixto: Ceci propone 2–3 opciones por momento y ustedes eligen sin perder tiempo."
+          : "Les conviene una selección más curada: Ceci guía el criterio y ustedes eligen con detalle para que todo sea 100% ustedes."
+    }</p>
+  ` : "";
 
   resultDetails.innerHTML = `
     <h3>🔎 Lo que esto dice sobre ustedes</h3>
@@ -837,6 +953,8 @@ function renderResult(computed, intensity, prioridad, indice){
     <h3>💎 Perfil de inversión</h3>
     <p>${escapeHtml(investmentBlock(intensity))}</p>
 
+    ${curationBlock}
+
     <hr/>
 
     <h3>🎼 Set recomendado (formato)</h3>
@@ -852,7 +970,7 @@ function renderResult(computed, intensity, prioridad, indice){
   resultDetails.classList.add("hidden");
   btnToggleDetails.textContent = "Ver análisis completo";
 
-  const text = `Hola Ceci! Hicimos el test y nos salió: ${a1.name} (secundario: ${a2.name}). Intensidad: ${m.name}. Invitados: ${lead.invitados || "-"} · Lugar: ${lead.venue || "-"}. Prioridad interna: ${prioridad}. Queremos una propuesta personalizada 🙌`;
+  const text = `Hola Ceci! Hicimos el test y nos salió: ${a1.name} (secundario: ${a2.name}). Intensidad: ${m.name}. Importancia música: ${musicImportance}/10. Invitados: ${lead.invitados || "-"} · Lugar: ${lead.venue || "-"}. ${planningVibeLabel ? "Planificación: " + planningVibeLabel + ". " : ""}${curationStyleLabel ? "Selección: " + curationStyleLabel + ". " : ""}Prioridad interna: ${prioridad}. Queremos una propuesta personalizada 🙌`;
   btnWA.setAttribute("href", `${WHATSAPP_BASE}?text=${encodeURIComponent(text)}`);
 }
 
@@ -860,4 +978,4 @@ function renderResult(computed, intensity, prioridad, indice){
 // INIT
 // ================================
 show("#screen-intro");
-console.log("✅ app.js FINAL (venue+invitados en formulario) cargado OK");
+console.log("✅ app.js FINAL (8 preguntas + slider + planning + curation) cargado OK");
