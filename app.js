@@ -1,3 +1,4 @@
+// app.js
 // ================================
 // EL VIOLÍN DE CECI — TEST (FINAL)
 // ✅ 8 preguntas
@@ -6,6 +7,7 @@
 // ✅ curation_style
 // ✅ Envía: music_importance, planning_vibe_label, curation_style_label
 // ✅ Badge dorado iPhone-safe en icono de pregunta
+// ✅ (Mejoras esenciales) q3/q8 no contaminan arquetipo + daysUntil estable + feedback si falla webhook + q6 numérico
 // ================================
 
 const WEBHOOK_URL = "https://script.google.com/macros/s/AKfycbyM1hmE4bGWAx0VW6AYZSFN1XX6f8B0S5GbQkVOSe8o2vQgZ_jIPGeuqlmJJlxs3Kr-8Q/exec";
@@ -158,7 +160,7 @@ const musicModules = {
 };
 
 // ================================
-// SETLISTS + ADDONS (SIN CAMBIOS)
+// SETLISTS + ADDONS
 // ================================
 const setlists = {
   A: { title: "Setlist recomendado — Clásicos Elegantes", moments: [
@@ -199,10 +201,15 @@ const intensityAddOns = {
 // ================================
 function daysUntil(dateStr){
   if(!dateStr) return null;
-  const d = new Date(dateStr + "T00:00:00");
-  if (Number.isNaN(d.getTime())) return null;
+  const [y,m,d] = String(dateStr).split("-").map(Number);
+  if (!y || !m || !d) return null;
+
+  // ✅ estable entre dispositivos: usar UTC (mediodía)
+  const target = new Date(Date.UTC(y, m-1, d, 12, 0, 0));
   const now = new Date();
-  return Math.ceil((d.getTime() - now.getTime()) / (1000*60*60*24));
+  const nowUTC = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate(), 12, 0, 0));
+
+  return Math.ceil((target.getTime() - nowUTC.getTime()) / (1000*60*60*24));
 }
 
 function normalizeVenue(s){
@@ -324,6 +331,10 @@ btnStart?.addEventListener("click", () => {
   curationStyleLabel = "";
   musicImportance = questions.find(q => q.type === "slider")?.slider?.defaultValue ?? 5;
 
+  // opcional: evitar fechas pasadas (no cambia estructura)
+  const dateEl = $("#fecha_boda");
+  if (dateEl) dateEl.min = new Date().toISOString().slice(0,10);
+
   renderQuestion();
   show("#screen-quiz");
 });
@@ -393,9 +404,15 @@ leadForm?.addEventListener("submit", async (e) => {
 
   if (!sending){
     sending = true;
-    try{ await enviarLeadASheets(payload); }
-    catch(err){ console.error("Error guardando lead:", err); }
-    finally{ sending = false; }
+    try{
+      await enviarLeadASheets(payload);
+    } catch(err){
+      console.error("Error guardando lead:", err);
+      // ✅ feedback esencial
+      alert("Tus resultados están listos ✅ pero hubo un problema guardando tus datos. Escribinos por WhatsApp y lo resolvemos rápido 🙌");
+    } finally{
+      sending = false;
+    }
   }
 
   locked = false;
@@ -537,15 +554,23 @@ function renderQuestion(){
 // ================================
 function computeArchetype(ans){
   const scores = {A:0, B:0, C:0, D:0, E:0};
-  ans.forEach(a => { if(a && scores[a] !== undefined) scores[a]++; });
+
+  // ✅ ESENCIAL: q3 (planificación) y q8 (curation) NO influyen en arquetipo.
+  // Usamos solo q1, q2, q4, q5, q7 (idx 0,1,3,4,6)
+  const includeIdx = [0, 1, 3, 4, 6];
+  includeIdx.forEach(i => {
+    const a = ans[i];
+    if (a && scores[a] !== undefined) scores[a]++;
+  });
 
   const entries = Object.entries(scores);
   const max = Math.max(...entries.map(([,v]) => v));
   let tied = entries.filter(([,v]) => v === max).map(([k]) => k);
 
   if (tied.length > 1){
-    for (let i = ans.length - 1; i >= 0; i--){
-      if (tied.includes(ans[i])) { tied = [ans[i]]; break; }
+    for (let i = includeIdx.length - 1; i >= 0; i--){
+      const idx = includeIdx[i];
+      if (tied.includes(ans[idx])) { tied = [ans[idx]]; break; }
     }
   }
   const primary = tied[0] || "B";
@@ -555,8 +580,9 @@ function computeArchetype(ans){
   let secTied = remaining.filter(([,v]) => v === secMax).map(([k]) => k);
 
   if (secTied.length > 1){
-    for (let i = ans.length - 1; i >= 0; i--){
-      if (secTied.includes(ans[i])) { secTied = [ans[i]]; break; }
+    for (let i = includeIdx.length - 1; i >= 0; i--){
+      const idx = includeIdx[i];
+      if (secTied.includes(ans[idx])) { secTied = [ans[idx]]; break; }
     }
   }
 
@@ -619,7 +645,10 @@ function buildPayload(lead, answers, intensityAnswers, computed, intensity, prio
     curation_style_label: lead.curation_style_label || "",
 
     q1: q(0), q2: q(1), q3: q(2), q4: q(3),
-    q5: q(4), q6: "SLIDER", q7: q(6), q8: q(7),
+    q5: q(4),
+    // ✅ ESENCIAL: guardar q6 numérico también
+    q6: String(musicImportance),
+    q7: q(6), q8: q(7),
     q9: "", q10: "",
 
     m1: m(0), m2: m(1), m3: m(2), m4: m(3), m5: m(4),
@@ -795,7 +824,14 @@ function renderResult(computed, intensity, prioridad, indice){
   resultDetails.classList.add("hidden");
   btnToggleDetails.textContent = "Ver análisis completo";
 
-  const text = `Hola Ceci! Hicimos el test y nos salió: ${a1.name} (secundario: ${a2.name}). Intensidad: ${m.name}. Importancia música: ${musicImportance}/10. Invitados: ${lead.invitados || "-"} · Lugar: ${lead.venue || "-"}. ${planningVibeLabel ? "Planificación: " + planningVibeLabel + ". " : ""}${curationStyleLabel ? "Selección: " + curationStyleLabel + ". " : ""}Prioridad interna: ${prioridad}. Queremos una propuesta personalizada 🙌`;
+  const text =
+    `Hola Ceci! Hicimos el test y nos salió: ${a1.name} (secundario: ${a2.name}). ` +
+    `Intensidad: ${m.name}. Importancia música: ${musicImportance}/10. ` +
+    `Invitados: ${lead.invitados || "-"} · Lugar: ${lead.venue || "-"}. ` +
+    `${planningVibeLabel ? "Planificación: " + planningVibeLabel + ". " : ""}` +
+    `${curationStyleLabel ? "Selección: " + curationStyleLabel + ". " : ""}` +
+    `Prioridad interna: ${prioridad}. Queremos una propuesta personalizada 🙌`;
+
   btnWA.setAttribute("href", `${WHATSAPP_BASE}?text=${encodeURIComponent(text)}`);
 }
 
@@ -803,4 +839,4 @@ function renderResult(computed, intensity, prioridad, indice){
 // INIT
 // ================================
 show("#screen-intro");
-console.log("✅ app.js FINAL (badge dorado iPhone-safe + venue rojo) cargado OK");
+console.log("✅ app.js FINAL (mejoras esenciales) cargado OK");
