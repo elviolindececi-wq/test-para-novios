@@ -249,7 +249,7 @@ h2{
 }
 
 /* ✅ Venue note rojo (como antes) */
-.venue-note{
+.field small.venue-note{
   color:#e05a5a;
   font-weight:500;
 }
