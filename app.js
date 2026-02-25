@@ -3,8 +3,9 @@
 // ✅ 8 preguntas
 // ✅ planning_vibe (no literal)
 // ✅ slider 0–10 music_importance
-// ✅ curation_style (cero estrés vs involucrarse)
+// ✅ curation_style
 // ✅ Envía: music_importance, planning_vibe_label, curation_style_label
+// ✅ Badge dorado iPhone-safe en icono de pregunta
 // ================================
 
 const WEBHOOK_URL = "https://script.google.com/macros/s/AKfycbyM1hmE4bGWAx0VW6AYZSFN1XX6f8B0S5GbQkVOSe8o2vQgZ_jIPGeuqlmJJlxs3Kr-8Q/exec";
@@ -39,8 +40,6 @@ function escapeHtml(str){
 
 // ================================
 // QUESTIONS (8)
-// - Las de tipo "options" usan botones
-// - La de tipo "slider" usa range 0–10 y guarda music_importance
 // ================================
 const questions = [
   {
@@ -75,10 +74,10 @@ const questions = [
     title: "🧩 Hoy, la planificación de su boda se siente más como…",
     hint: "Elegí lo que más se parezca a cómo lo están viviendo (no hay respuestas “malas”).",
     options: [
-      { key:"P_A", text:"Un tablero ordenado: todo va encajando.", label:"Tablero ordenado (todo va encajando)" },
-      { key:"P_B", text:"Un moodboard en construcción: estamos inspirándonos.", label:"Moodboard en construcción (inspiración)" },
-      { key:"P_C", text:"Una lista infinita: hay mucho por resolver.", label:"Lista infinita (mucho por resolver)" },
-      { key:"P_D", text:"Una aventura: vamos paso a paso.", label:"Aventura paso a paso (relajados)" }
+      { key:"A", text:"Un tablero ordenado: todo va encajando.", label:"Tablero ordenado (todo va encajando)" },
+      { key:"B", text:"Un moodboard en construcción: estamos inspirándonos.", label:"Moodboard en construcción (inspiración)" },
+      { key:"C", text:"Una lista infinita: hay mucho por resolver.", label:"Lista infinita (mucho por resolver)" },
+      { key:"D", text:"Una aventura: vamos paso a paso.", label:"Aventura paso a paso (relajados)" }
     ]
   },
   {
@@ -134,9 +133,9 @@ const questions = [
     title: "🎼 Para elegir las canciones, ustedes prefieren…",
     hint: "Lo importante es que sea fácil para ustedes (y que suene increíble).",
     options: [
-      { key:"C_A", text:"Que Ceci lo resuelva por nosotros (cero estrés).", label:"Que Ceci lo resuelva (cero estrés)" },
-      { key:"C_B", text:"Mitad y mitad: Ceci propone + nosotros elegimos.", label:"Mitad y mitad (Ceci propone + nosotros eligen)" },
-      { key:"C_C", text:"Queremos involucrarnos y elegir con detalle.", label:"Quieren involucrarse (detalle)" }
+      { key:"A", text:"Que Ceci lo resuelva por nosotros (cero estrés).", label:"Que Ceci lo resuelva (cero estrés)" },
+      { key:"B", text:"Mitad y mitad: Ceci propone + nosotros elegimos.", label:"Mitad y mitad (Ceci propone + ustedes eligen)" },
+      { key:"C", text:"Queremos involucrarnos y elegir con detalle.", label:"Quieren involucrarse (detalle)" }
     ]
   }
 ];
@@ -145,61 +144,11 @@ const questions = [
 // ARCHETYPES
 // ================================
 const archetypes = {
-  A: {
-    name: "💎 Clásicos Elegantes",
-    tagline: "La excelencia es el lenguaje del amor.",
-    brief: "Orden, armonía y estética impecable. La emoción es contenida, refinada y profundamente intencional.",
-    full: "Ustedes valoran coherencia y dirección. No improvisan momentos: los diseñan. La música ideal marca entradas y transiciones con elegancia, sin exageración.",
-    set: [
-      "Violín + piano (ideal con baby grand piano shell)",
-      "Ceremonia: clásico/romántico refinado",
-      "Cóctel: instrumental elegante con pop reinterpretado"
-    ]
-  },
-  B: {
-    name: "🌿 Románticos Naturales",
-    tagline: "Si no se siente auténtico, no es para nosotros.",
-    brief: "Calidez, luz suave y emoción genuina. Menos show, más verdad.",
-    full: "Priorizan conexión por encima del impacto. La música acompaña y sostiene la atmósfera sin invadir: romántica, orgánica, íntima.",
-    set: [
-      "Violín + piano íntimo",
-      "Ceremonia: romántico suave",
-      "Cóctel: indie/pop delicado instrumental"
-    ]
-  },
-  C: {
-    name: "🎨 Creativos Vanguardistas",
-    tagline: "No queremos una boda. Queremos una experiencia.",
-    brief: "Editorial, audaz y con identidad propia. Un concepto, no un formato.",
-    full: "Piensan en narrativa y diseño. La música puede sorprender con arreglos únicos y giros inesperados, siempre con estética cuidada.",
-    set: [
-      "Violín protagonista + piano",
-      "Arreglos exclusivos",
-      "Momento ‘wow’ elegante (performance breve)"
-    ]
-  },
-  D: {
-    name: "🎉 Sociales Festivos",
-    tagline: "Queremos que todos recuerden esta noche.",
-    brief: "Celebración, energía y momentos compartidos. La emoción es expansiva.",
-    full: "Diseñan pensando en la vibra del invitado. La música marca el ritmo y puede subir energía con inteligencia: transiciones hacia una fiesta inolvidable.",
-    set: [
-      "Violín con presencia escénica",
-      "Hits instrumental en cóctel",
-      "Performance sorpresa para activar"
-    ]
-  },
-  E: {
-    name: "🤍 Íntimos Emocionales",
-    tagline: "No buscamos espectáculo. Buscamos significado.",
-    brief: "Profundidad, historia y emoción silenciosa. Momentos que se quedan en la piel.",
-    full: "Priorizan lo verdadero. La música ideal es puente emocional: acompaña votos, lecturas y momentos simbólicos con sensibilidad.",
-    set: [
-      "Violín + piano minimalista",
-      "Canciones personalizadas",
-      "Momentos íntimos dirigidos con sensibilidad"
-    ]
-  }
+  A: { name: "💎 Clásicos Elegantes", tagline: "La excelencia es el lenguaje del amor.", brief: "Orden, armonía y estética impecable. La emoción es contenida, refinada y profundamente intencional.", full: "Ustedes valoran coherencia y dirección. No improvisan momentos: los diseñan. La música ideal marca entradas y transiciones con elegancia, sin exageración.", set: ["Violín + piano (ideal con baby grand piano shell)","Ceremonia: clásico/romántico refinado","Cóctel: instrumental elegante con pop reinterpretado"] },
+  B: { name: "🌿 Románticos Naturales", tagline: "Si no se siente auténtico, no es para nosotros.", brief: "Calidez, luz suave y emoción genuina. Menos show, más verdad.", full: "Priorizan conexión por encima del impacto. La música acompaña y sostiene la atmósfera sin invadir: romántica, orgánica, íntima.", set: ["Violín + piano íntimo","Ceremonia: romántico suave","Cóctel: indie/pop delicado instrumental"] },
+  C: { name: "🎨 Creativos Vanguardistas", tagline: "No queremos una boda. Queremos una experiencia.", brief: "Editorial, audaz y con identidad propia. Un concepto, no un formato.", full: "Piensan en narrativa y diseño. La música puede sorprender con arreglos únicos y giros inesperados, siempre con estética cuidada.", set: ["Violín protagonista + piano","Arreglos exclusivos","Momento ‘wow’ elegante (performance breve)"] },
+  D: { name: "🎉 Sociales Festivos", tagline: "Queremos que todos recuerden esta noche.", brief: "Celebración, energía y momentos compartidos. La emoción es expansiva.", full: "Diseñan pensando en la vibra del invitado. La música marca el ritmo y puede subir energía con inteligencia: transiciones hacia una fiesta inolvidable.", set: ["Violín con presencia escénica","Hits instrumental en cóctel","Performance sorpresa para activar"] },
+  E: { name: "🤍 Íntimos Emocionales", tagline: "No buscamos espectáculo. Buscamos significado.", brief: "Profundidad, historia y emoción silenciosa. Momentos que se quedan en la piel.", full: "Priorizan lo verdadero. La música ideal es puente emocional: acompaña votos, lecturas y momentos simbólicos con sensibilidad.", set: ["Violín + piano minimalista","Canciones personalizadas","Momentos íntimos dirigidos con sensibilidad"] }
 };
 
 const musicModules = {
@@ -209,128 +158,40 @@ const musicModules = {
 };
 
 // ================================
-// SETLISTS + ADDONS (igual que tu versión)
+// SETLISTS + ADDONS (SIN CAMBIOS)
 // ================================
 const setlists = {
-  A: {
-    title: "Setlist recomendado — Clásicos Elegantes",
-    moments: [
-      { name: "Ceremonia (clásico refinado + emoción contenida)", songs: [
-        "Canon in D — Pachelbel",
-        "Clair de Lune — Debussy",
-        "A Thousand Years — Christina Perri (instrumental)",
-        "Perfect — Ed Sheeran (instrumental)",
-        "All of Me — John Legend (instrumental)"
-      ]},
-      { name: "Cóctel / Recepción (luxury lounge, conversación)", songs: [
-        "La Vie En Rose — Édith Piaf (instrumental)",
-        "Fly Me to the Moon — Sinatra (instrumental)",
-        "At Last — Etta James (instrumental)",
-        "Can’t Help Falling in Love — Elvis (instrumental)"
-      ]},
-      { name: "Momento especial (firma Ceci)", songs: [
-        "Viva la Vida — Coldplay (instrumental elegante)",
-        "Yellow — Coldplay (instrumental)"
-      ]}
-    ]
-  },
-  B: {
-    title: "Setlist recomendado — Románticos Naturales",
-    moments: [
-      { name: "Ceremonia (orgánico, cálido, auténtico)", songs: [
-        "Turning Page — Sleeping At Last (instrumental)",
-        "I Get to Love You — Ruelle (instrumental)",
-        "You Are the Reason — Calum Scott (instrumental)",
-        "Bloom — The Paper Kites (instrumental)"
-      ]},
-      { name: "Cóctel / Recepción (indie-pop delicado)", songs: [
-        "Ho Hey — The Lumineers (instrumental)",
-        "Riptide — Vance Joy (instrumental)",
-        "Somewhere Only We Know — Keane (instrumental)",
-        "Photograph — Ed Sheeran (instrumental)"
-      ]},
-      { name: "Cierre emotivo", songs: [
-        "A Sky Full of Stars — Coldplay (instrumental suave)"
-      ]}
-    ]
-  },
-  C: {
-    title: "Setlist recomendado — Creativos Vanguardistas",
-    moments: [
-      { name: "Ceremonia (editorial, conceptual)", songs: [
-        "Experience — Ludovico Einaudi",
-        "Nuvole Bianche — Ludovico Einaudi",
-        "Time — Hans Zimmer",
-        "Young and Beautiful — Lana del Rey (instrumental)"
-      ]},
-      { name: "Cóctel / Recepción (curado, cool)", songs: [
-        "Midnight City — M83 (instrumental)",
-        "Blinding Lights — The Weeknd (instrumental, classy)",
-        "Levitating — Dua Lipa (instrumental)",
-        "Take Five — Dave Brubeck (vibe)"
-      ]},
-      { name: "Momento WOW (intervención)", songs: [
-        "Titanium — David Guetta (instrumental épico)",
-        "Viva la Vida — Coldplay (arreglo sorpresa)"
-      ]}
-    ]
-  },
-  D: {
-    title: "Setlist recomendado — Sociales Festivos",
-    moments: [
-      { name: "Ceremonia (emocionante con ritmo)", songs: [
-        "Marry You — Bruno Mars (instrumental)",
-        "I’m Yours — Jason Mraz (instrumental)",
-        "Love on Top — Beyoncé (instrumental)"
-      ]},
-      { name: "Cóctel / Recepción (subiendo energía)", songs: [
-        "Uptown Funk — Bruno Mars (instrumental)",
-        "September — Earth, Wind & Fire (instrumental)",
-        "Happy — Pharrell Williams (instrumental)"
-      ]},
-      { name: "Activación / transición a fiesta", songs: [
-        "Don’t Stop Me Now — Queen (instrumental)",
-        "Titanium — instrumental épico"
-      ]}
-    ]
-  },
-  E: {
-    title: "Setlist recomendado — Íntimos Emocionales",
-    moments: [
-      { name: "Ceremonia (minimalismo emocional)", songs: [
-        "River Flows in You — Yiruma",
-        "Kiss the Rain — Yiruma",
-        "Comptine d’un autre été — Yann Tiersen",
-        "Clair de Lune — Debussy"
-      ]},
-      { name: "Cóctel / Recepción (cálido y cercano)", songs: [
-        "Make You Feel My Love — Adele (instrumental)",
-        "Hallelujah — instrumental",
-        "Stand By Me — instrumental suave"
-      ]},
-      { name: "Momento simbólico", songs: [
-        "A Thousand Years — instrumental (íntimo)"
-      ]}
-    ]
-  }
+  A: { title: "Setlist recomendado — Clásicos Elegantes", moments: [
+    { name: "Ceremonia (clásico refinado + emoción contenida)", songs: ["Canon in D — Pachelbel","Clair de Lune — Debussy","A Thousand Years — Christina Perri (instrumental)","Perfect — Ed Sheeran (instrumental)","All of Me — John Legend (instrumental)"]},
+    { name: "Cóctel / Recepción (luxury lounge, conversación)", songs: ["La Vie En Rose — Édith Piaf (instrumental)","Fly Me to the Moon — Sinatra (instrumental)","At Last — Etta James (instrumental)","Can’t Help Falling in Love — Elvis (instrumental)"]},
+    { name: "Momento especial (firma Ceci)", songs: ["Viva la Vida — Coldplay (instrumental elegante)","Yellow — Coldplay (instrumental)"]}
+  ]},
+  B: { title: "Setlist recomendado — Románticos Naturales", moments: [
+    { name: "Ceremonia (orgánico, cálido, auténtico)", songs: ["Turning Page — Sleeping At Last (instrumental)","I Get to Love You — Ruelle (instrumental)","You Are the Reason — Calum Scott (instrumental)","Bloom — The Paper Kites (instrumental)"]},
+    { name: "Cóctel / Recepción (indie-pop delicado)", songs: ["Ho Hey — The Lumineers (instrumental)","Riptide — Vance Joy (instrumental)","Somewhere Only We Know — Keane (instrumental)","Photograph — Ed Sheeran (instrumental)"]},
+    { name: "Cierre emotivo", songs: ["A Sky Full of Stars — Coldplay (instrumental suave)"]}
+  ]},
+  C: { title: "Setlist recomendado — Creativos Vanguardistas", moments: [
+    { name: "Ceremonia (editorial, conceptual)", songs: ["Experience — Ludovico Einaudi","Nuvole Bianche — Ludovico Einaudi","Time — Hans Zimmer","Young and Beautiful — Lana del Rey (instrumental)"]},
+    { name: "Cóctel / Recepción (curado, cool)", songs: ["Midnight City — M83 (instrumental)","Blinding Lights — The Weeknd (instrumental, classy)","Levitating — Dua Lipa (instrumental)","Take Five — Dave Brubeck (vibe)"]},
+    { name: "Momento WOW (intervención)", songs: ["Titanium — David Guetta (instrumental épico)","Viva la Vida — Coldplay (arreglo sorpresa)"]}
+  ]},
+  D: { title: "Setlist recomendado — Sociales Festivos", moments: [
+    { name: "Ceremonia (emocionante con ritmo)", songs: ["Marry You — Bruno Mars (instrumental)","I’m Yours — Jason Mraz (instrumental)","Love on Top — Beyoncé (instrumental)"]},
+    { name: "Cóctel / Recepción (subiendo energía)", songs: ["Uptown Funk — Bruno Mars (instrumental)","September — Earth, Wind & Fire (instrumental)","Happy — Pharrell Williams (instrumental)"]},
+    { name: "Activación / transición a fiesta", songs: ["Don’t Stop Me Now — Queen (instrumental)","Titanium — instrumental épico"]}
+  ]},
+  E: { title: "Setlist recomendado — Íntimos Emocionales", moments: [
+    { name: "Ceremonia (minimalismo emocional)", songs: ["River Flows in You — Yiruma","Kiss the Rain — Yiruma","Comptine d’un autre été — Yann Tiersen","Clair de Lune — Debussy"]},
+    { name: "Cóctel / Recepción (cálido y cercano)", songs: ["Make You Feel My Love — Adele (instrumental)","Hallelujah — instrumental","Stand By Me — instrumental suave"]},
+    { name: "Momento simbólico", songs: ["A Thousand Years — instrumental (íntimo)"]}
+  ]}
 };
 
 const intensityAddOns = {
-  M1: {
-    title: "Ajuste por intensidad (M1 — Acompañamiento sutil)",
-    note: "Arreglos suaves, tempos moderados y prioridad a atmósfera. Menos cambios bruscos.",
-    add: ["Clair de Lune — Debussy", "Kiss the Rain — Yiruma", "Turning Page — Sleeping At Last (instrumental)"]
-  },
-  M2: {
-    title: "Ajuste por intensidad (M2 — Protagonismo sofisticado)",
-    note: "Sumar piezas “ancla” para entradas y transiciones. Arreglos marcados y coordinación con timing.",
-    add: ["Canon in D — Pachelbel", "La Vie En Rose — instrumental", "Viva la Vida — Coldplay (instrumental elegante)"]
-  },
-  M3: {
-    title: "Ajuste por intensidad (M3 — Momento WOW)",
-    note: "Agregar 1–2 intervenciones sorpresa cortas (60–90s) que generen reacción sin perder estética.",
-    add: ["Titanium — instrumental épico", "Blinding Lights — instrumental classy", "Uptown Funk — instrumental (mini show)"]
-  }
+  M1: { title: "Ajuste por intensidad (M1 — Acompañamiento sutil)", note: "Arreglos suaves, tempos moderados y prioridad a atmósfera. Menos cambios bruscos.", add: ["Clair de Lune — Debussy","Kiss the Rain — Yiruma","Turning Page — Sleeping At Last (instrumental)"] },
+  M2: { title: "Ajuste por intensidad (M2 — Protagonismo sofisticado)", note: "Sumar piezas “ancla” para entradas y transiciones. Arreglos marcados y coordinación con timing.", add: ["Canon in D — Pachelbel","La Vie En Rose — instrumental","Viva la Vida — Coldplay (instrumental elegante)"] },
+  M3: { title: "Ajuste por intensidad (M3 — Momento WOW)", note: "Agregar 1–2 intervenciones sorpresa cortas (60–90s) que generen reacción sin perder estética.", add: ["Titanium — instrumental épico","Blinding Lights — instrumental classy","Uptown Funk — instrumental (mini show)"] }
 };
 
 // ================================
@@ -360,52 +221,22 @@ function computePriority(lead, intensity){
   if (intensity === "M2") points += 2;
   if (intensity === "M3") points += 3;
 
-  // invitados
   if (lead.invitados === "80 – 150") points += 1;
   if (lead.invitados === "150 – 250") points += 2;
   if (lead.invitados === "Más de 250") points += 3;
 
-  // venue points
   const VENUE_POINTS = {
-    // +2
-    "la riviere": 2,
-    "es vedra": 2,
-    "las takuaras": 2,
-    "castillo remanso": 2,
-    "casa puente": 2,
-    "castillo": 2,
-    "puerto liebig": 2,
-    "talleryrand": 2,
-    "talleryrand costanera": 2,
-    "villa maria": 2,
-    "casa corbellani": 2,
-    "casita quinta": 2,
-
-    // +1
-    "villa jardin": 1,
-    "royal": 1,
-    "royal eventos": 1,
-    "soir": 1,
-    "soir eventos": 1,
-    "vista verde": 1,
-    "la isabella": 1,
-    "casa 1927": 1,
-    "la glorieta": 1,
-    "mantra salon boutique": 1,
-
-    // +0
-    "rusticana": 0,
-    "rusticana eventos": 0,
-    "isabella": 0,
-    "tiam eventos": 0,
-    "mantra": 0
+    "la riviere": 2,"es vedra": 2,"las takuaras": 2,"castillo remanso": 2,"casa puente": 2,"castillo": 2,"puerto liebig": 2,
+    "talleryrand": 2,"talleryrand costanera": 2,"villa maria": 2,"casa corbellani": 2,"casita quinta": 2,
+    "villa jardin": 1,"royal": 1,"royal eventos": 1,"soir": 1,"soir eventos": 1,"vista verde": 1,"la isabella": 1,
+    "casa 1927": 1,"la glorieta": 1,"mantra salon boutique": 1,
+    "rusticana": 0,"rusticana eventos": 0,"isabella": 0,"tiam eventos": 0,"mantra": 0
   };
 
   const v = normalizeVenue(lead.venue);
   if (!v || v.includes("otro")) points += 0;
   else points += (VENUE_POINTS[v] ?? 0);
 
-  // fecha
   const days = daysUntil(lead.fecha_boda);
   if (days !== null){
     if (days <= 90) points += 3;
@@ -413,7 +244,6 @@ function computePriority(lead, intensity){
     else if (days <= 365) points += 1;
   }
 
-  // ✅ music importance (suave, no invasivo)
   const mi = Number(lead.music_importance);
   if (Number.isFinite(mi)) {
     if (mi >= 8) points += 2;
@@ -449,10 +279,9 @@ let intensityAnswers = Array(questions.length).fill(null);
 let sending = false;
 let locked = false;
 
-// Captura extra (para Sheet y para texto humano)
 let planningVibeLabel = "";
 let curationStyleLabel = "";
-let musicImportance = 5; // default
+let musicImportance = 5;
 
 // ================================
 // ELEMENTS
@@ -603,7 +432,7 @@ btnRetry?.addEventListener("click", () => {
 if (btnIG) btnIG.setAttribute("href", INSTAGRAM_URL);
 
 // ================================
-// RENDER QUESTION
+// RENDER QUESTION (✅ badge iPhone-safe)
 // ================================
 function setNextLabelAndHint(){
   const isLast = currentQ === questions.length - 1;
@@ -618,7 +447,15 @@ function setNextLabelAndHint(){
 function renderQuestion(){
   const q = questions[currentQ];
 
-  qTitle.textContent = q.title;
+  // ✅ TITULO CON BADGE (no depende de color del emoji)
+  const parts = q.title.split(" ");
+  const icon = parts.shift() || "";
+  const rest = parts.join(" ");
+
+  qTitle.innerHTML =
+    `<span class="q-icon-badge" aria-hidden="true">${escapeHtml(icon)}</span>` +
+    `<span class="q-title-text">${escapeHtml(rest)}</span>`;
+
   qCount.textContent = `${currentQ + 1} de ${questions.length}`;
 
   const quizProgress = Math.round(((currentQ + 1) / questions.length) * 90);
@@ -629,7 +466,6 @@ function renderQuestion(){
 
   setNextLabelAndHint();
 
-  // Slider: siempre permite seguir (hay default)
   if (q.type === "slider"){
     btnNext.disabled = false;
 
@@ -671,22 +507,18 @@ function renderQuestion(){
     return;
   }
 
-  // Options
   btnNext.disabled = !answers[currentQ];
 
   q.options.forEach((opt) => {
     const b = document.createElement("button");
     b.type = "button";
     b.className = "opt" + (answers[currentQ] === opt.key ? " selected" : "");
-
-    // key + texto
     b.innerHTML = `<span class="k">${escapeHtml(opt.key)}</span>${escapeHtml(opt.text)}`;
 
     b.addEventListener("click", () => {
       answers[currentQ] = opt.key;
       intensityAnswers[currentQ] = opt.music || null;
 
-      // capturas “humanas” para sheet
       if (q.id === "q3") planningVibeLabel = opt.label || "";
       if (q.id === "q8") curationStyleLabel = opt.label || "";
 
@@ -735,12 +567,10 @@ function computeIntensity(intensityArr, lead){
   const m = {M1:0, M2:0, M3:0};
   intensityArr.forEach(x => { if(x && m[x] !== undefined) m[x]++; });
 
-  // invitados influyen
   if (lead.invitados === "150 – 250") m.M2 += 1;
   if (lead.invitados === "Más de 250") m.M3 += 2;
   if (lead.invitados === "Menos de 80") m.M1 += 1;
 
-  // venue influye (normalizado)
   const v = normalizeVenue(lead.venue);
   if (v.includes("hotel")) m.M2 += 1;
   if (v.includes("salon")) m.M2 += 1;
@@ -748,7 +578,6 @@ function computeIntensity(intensityArr, lead){
   if (v.includes("playa") || v.includes("destino")) m.M3 += 1;
   if (v.includes("iglesia") || v.includes("capilla")) m.M1 += 1;
 
-  // ✅ music importance (inclina, no manda)
   const mi = Number(lead.music_importance);
   if (Number.isFinite(mi)) {
     if (mi >= 9) m.M3 += 2;
@@ -773,7 +602,6 @@ function computeIntensity(intensityArr, lead){
 // PAYLOAD + SEND
 // ================================
 function buildPayload(lead, answers, intensityAnswers, computed, intensity, prioridad, points, indice){
-  // compat con tu sheet (q1..q10, m1..m10)
   const q = (i) => answers[i] || "";
   const m = (i) => intensityAnswers[i] || "";
 
@@ -786,17 +614,14 @@ function buildPayload(lead, answers, intensityAnswers, computed, intensity, prio
     invitados: lead.invitados,
     vision_musical: "",
 
-    // ✅ nuevas columnas
     music_importance: lead.music_importance ?? "",
     planning_vibe_label: lead.planning_vibe_label || "",
     curation_style_label: lead.curation_style_label || "",
 
-    // Respuestas (8 reales + 2 vacías)
     q1: q(0), q2: q(1), q3: q(2), q4: q(3),
     q5: q(4), q6: "SLIDER", q7: q(6), q8: q(7),
     q9: "", q10: "",
 
-    // Intensidad por pregunta (8 reales + 2 vacías)
     m1: m(0), m2: m(1), m3: m(2), m4: m(3), m5: m(4),
     m6: "", m7: m(6), m8: m(7),
     m9: "", m10: "",
@@ -978,4 +803,4 @@ function renderResult(computed, intensity, prioridad, indice){
 // INIT
 // ================================
 show("#screen-intro");
-console.log("✅ app.js FINAL (8 preguntas + slider + planning + curation) cargado OK");
+console.log("✅ app.js FINAL (badge dorado iPhone-safe + venue rojo) cargado OK");
